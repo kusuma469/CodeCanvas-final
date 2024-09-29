@@ -11,7 +11,7 @@ interface BoardIdPageProps {
 const BoardIdPage = ({
     params,
 }: BoardIdPageProps) => {
-    
+    console.log(params.boardId)
     return (
         <div className="h-screen w-screen">
             <Room roomId={params.boardId} fallback={<Loading />}>

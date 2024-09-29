@@ -1,4 +1,6 @@
 "use client";
+
+import { ChangeEvent, useState } from "react";
 import {
     AlertDialog,
     AlertDialogAction,
@@ -10,6 +12,7 @@ import {
     AlertDialogTitle,
     AlertDialogTrigger,
 } from "./ui/alert-dialog";
+import { Input } from "./ui/input";
 
 interface ConfirmModalProps {
     children: React.ReactNode;
@@ -17,7 +20,7 @@ interface ConfirmModalProps {
     disabled?: boolean;
     header: string;
     description?: string | React.ReactNode;
-    //title: string;
+    title: string;
 }
 
 export const ConfirmModal = ({
@@ -26,11 +29,18 @@ export const ConfirmModal = ({
     disabled,
     header,
     description,
-    //title,
+    title,
 }: ConfirmModalProps) => {
-    const handleConfirm = ()=>{
-        onConfirm();
-    }
+    const [boardName, setBoardName] = useState("");
+    const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
+        setBoardName(e.target.value);
+    };
+
+    const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+        if (e.key === "Enter" && boardName === title) {
+            onConfirm();
+        }
+    };
 
     return (
         <AlertDialog>
@@ -43,11 +53,14 @@ export const ConfirmModal = ({
                     </AlertDialogDescription>
                 </AlertDialogHeader>
                 {/* TODO: Automatically focus the input tag */}
-                
+                <Input
+                    onChange={handleChange}
+                    onKeyDown={handleKeyDown}
+                />
                 <AlertDialogFooter>
                     <AlertDialogCancel>Cancel</AlertDialogCancel>
                     <AlertDialogAction
-                        disabled={disabled }
+                        disabled={disabled || boardName !== title}
                         onClick={onConfirm}
                     >
                         Confirm

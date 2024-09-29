@@ -1,3 +1,6 @@
+"use client";
+
+
 import { Loader } from "lucide-react";
 import { ParticipantsSkeleton } from "./participants";
 import { InfoSkeleton } from "./info";
