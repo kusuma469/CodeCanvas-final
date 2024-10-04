@@ -78,7 +78,7 @@ const Info = ({ boardId, exportAsPng }: InfoProps) => {
                 title={data.title}
                 side="bottom"
                 sideOffset={10}
-                alignOffset={-7}
+                //alignOffset={-7}
             >
                 <div>
                     <Hint label="Main Menu" side="bottom" sideOffset={10}>
