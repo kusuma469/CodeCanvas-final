@@ -9,7 +9,9 @@ import {
     StickyNote,
     TypeIcon,
     Undo2,
-} from "lucide-react";
+    Grid,
+    Grip, // Import a grid icon
+} from "lucide-react"; // Make sure to import a grid icon or any other icon you want to use
 import { CanvasMode, CanvasState, LayerType } from "@/types/canvas";
 import { useEffect } from "react";
 import { useSelf } from "@liveblocks/react/suspense";
@@ -21,6 +23,8 @@ interface ToolbarProps {
     redo: () => void;
     canUndo: boolean;
     canRedo: boolean;
+    toggleGrid: () => void; // Add toggleGrid prop
+    toggleDots: () => void;
 }
 
 const Toolbar = ({
@@ -30,6 +34,8 @@ const Toolbar = ({
     redo,
     canUndo,
     canRedo,
+    toggleGrid,
+    toggleDots, // Add toggleGrid to props
 }: ToolbarProps) => {
     const selection = useSelf((me) => me.presence.selection);
 
@@ -180,7 +186,18 @@ const Toolbar = ({
                     onClick={redo}
                     isDisabled={!canRedo}
                 />
+                <ToolButton
+                    label="Toggle Grid"
+                    icon={Grid} // Use your grid icon here
+                    onClick={toggleGrid} // Call the toggleGrid function on click
+                />
+                <ToolButton
+                    label="Toggle dots"
+                    icon={Grip} // Use your grid icon here
+                    onClick={toggleDots} // Call the toggleGrid function on click
+                />
             </div>
+            
         </div>
     );
 };

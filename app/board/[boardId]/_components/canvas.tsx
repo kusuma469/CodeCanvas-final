@@ -53,6 +53,8 @@ import { useQuery } from "convex/react";
 import { api } from "@/convex/_generated/api";
 import { Id } from "@/convex/_generated/dataModel";
 
+
+
 const MAX_LAYERS = 100;
 const SELECTION_NET_THRESHOLD = 5;
 const MOVE_OFFSET = 5;
@@ -81,12 +83,22 @@ export const Canvas = ({ boardId }: CanvasProps) => {
         g: 255,
         b: 255,
     });
+    
+    const [showGrid, setShowGrid] = useState(false);
+    const [showDots, setShowDots] = useState(false);
 
     useDisableScrollBounce();
     const history = useHistory();
     const canUndo = useCanUndo();
     const canRedo = useCanRedo();
 
+    const toggleGrid = () => {
+        setShowGrid((prev) => !prev);
+    };
+    const toggleDots = () => {
+        setShowDots((prev) => !prev);
+    };
+    
     const insertLayer = useMutation(
         (
             { storage, setMyPresence },
@@ -558,6 +570,8 @@ export const Canvas = ({ boardId }: CanvasProps) => {
                 canRedo={canRedo}
                 undo={history.undo}
                 redo={history.redo}
+                toggleGrid={toggleGrid}
+                toggleDots={toggleDots} // Pass the new function
             />
             {camera.x != 0 && camera.y != 0 && (
                 <ResetCamera resetCamera={resetCamera} />
@@ -568,6 +582,7 @@ export const Canvas = ({ boardId }: CanvasProps) => {
                 setLastUsedColor={setLastUsedColor}
                 lastUsedColor={lastUsedColor}
             />
+            
             <svg
                 ref={svgRef}
                 className="h-[100vh] w-[100vw]"
@@ -577,57 +592,61 @@ export const Canvas = ({ boardId }: CanvasProps) => {
                 onPointerUp={onPointerUp}
                 onPointerDown={onPointerDown}
             >
-                <g
-                    style={{
-                        transform: `translate(${camera.x}px, ${camera.y}px)`,
-                    }}
-                >
-                    {layerIds.map((layerId) => {
-                        return (
-                            <LayerPreview
-                                key={layerId}
-                                id={layerId}
-                                onLayerPointerDown={onLayerPointerDown}
-                                selectionColor={
-                                    layerIdsToColorSelection[layerId]
-                                }
-                            />
-                        );
-                    })}
-                    <SelectionBox
-                        onResizeHandlePointerDown={onResizeHandlePointerDown}
-                    />
-                    {canvasState.mode === CanvasMode.SelectionNet &&
-                        canvasState.current && (
-                            <rect
-                                className="fill-blue-500/5 stroke-blue-500 stroke-1"
-                                x={Math.min(
-                                    canvasState.origin.x,
-                                    canvasState.current.x
-                                )}
-                                y={Math.min(
-                                    canvasState.origin.y,
-                                    canvasState.current.y
-                                )}
-                                width={Math.abs(
-                                    canvasState.origin.x - canvasState.current.x
-                                )}
-                                height={Math.abs(
-                                    canvasState.origin.y - canvasState.current.y
-                                )}
-                            />
-                        )}
-                    <CursorsPresence />
-                    {pencilDraft && pencilDraft.length > 0 && (
-                        <Path
-                            points={pencilDraft}
-                            fill={colorToCss(lastUsedColor)}
-                            x={0}
-                            y={0}
-                        />
+                <g style={{ transform: `translate(${camera.x}px, ${camera.y}px)` }}>
+                    {/* Render grid if showGrid is true */}
+                    {showGrid && (
+                        <g className="grid-overlay">
+                            {Array.from({ length: 200 }, (_, i) => (
+                                <line
+                                    key={`v-${i}`}
+                                    x1={i * 50}
+                                    y1={0}
+                                    x2={i * 50}
+                                    y2={5000}
+                                    stroke="black"
+                                    strokeWidth={0.5}
+                                />
+                            ))}
+                            {Array.from({ length: 200 }, (_, i) => (
+                                <line
+                                    key={`h-${i}`}
+                                    x1={0}
+                                    y1={i * 50}
+                                    x2={5000}
+                                    y2={i * 50}
+                                    stroke="black"
+                                    strokeWidth={0.5}
+                                />
+                            ))}
+                        </g>
                     )}
+                    {showDots && ( // Conditional rendering for dots
+    <g className="dots-overlay">
+        {Array.from({ length: 200 }, (_, rowIndex) => (
+            Array.from({ length: 200 }, (_, colIndex) => (
+                <circle
+                    key={`dot-${rowIndex}-${colIndex}`}
+                    cx={colIndex * 50} // Adjust the spacing as needed
+                    cy={rowIndex * 50} // Adjust the spacing as needed
+                    r={2} // Radius of the dots
+                    fill="black" // Color of the dots
+                />
+            ))
+        ))}
+    </g>
+)}
+                    {layerIds.map((layerId) => (
+                        <LayerPreview
+                            key={layerId}
+                            id={layerId}
+                            onLayerPointerDown={onLayerPointerDown}
+                            selectionColor={layerIdsToColorSelection[layerId]}
+                        />
+                    ))}
+                    {/* Other existing layers and components... */}
                 </g>
             </svg>
         </main>
     );
 };
+    
