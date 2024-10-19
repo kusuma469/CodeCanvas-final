@@ -1,6 +1,5 @@
 import { v } from "convex/values";
 import { mutation, query } from "./_generated/server";
-
 const images = [
     "/placeholders/1.svg",
     "/placeholders/2.svg",
@@ -47,11 +46,24 @@ export const remove = mutation({
         if (!identity) {
             throw new Error("Unauthorized");
         }
+        const userId = identity.subject;
+        const existingFavorite = await ctx.db
+            .query("userFavorites")
+            .withIndex("by_user_board", (q) =>
+                q.eq("userId", userId).eq("boardId", args.id)
+            )
+            .unique();
+
+        if (existingFavorite) {
+            await ctx.db.delete(existingFavorite._id);
+        }
+
+        const board = await ctx.db.get(args.id);
+        if (board?.authorId !== userId) throw new Error("Unauthorized");
 
         await ctx.db.delete(args.id);
-
-    }
-})
+    },
+});
 
 export const update = mutation({
     args: {
@@ -70,11 +82,9 @@ export const update = mutation({
         if (title.length > 60)
             throw new Error("Title cannot be longer than 60 characters");
 
-        const board = await ctx.db.patch(args.id, { title: args.title });
-        return board;
+        return await ctx.db.patch(args.id, { title: args.title });
     },
 });
-
 
 export const favorite = mutation({
     args: {
@@ -112,7 +122,6 @@ export const favorite = mutation({
     },
 });
 
-
 export const unfavorite = mutation({
     args: {
         id: v.id("boards"),
@@ -147,10 +156,22 @@ export const unfavorite = mutation({
 
 export const get = query({
     args: {
-        id: v.id("boards")
+        id: v.id("boards"),
     },
     handler: async (ctx, args) => {
-        const board = ctx.db.get(args.id);
-        return board
+        return await ctx.db.get(args.id);
+    },
+});
+
+export const getTotalBoardCountOfOrg = query({
+    args: {
+        orgId: v.string(),
+    },
+    handler: async (ctx, args) => {
+        return await ctx.db
+            .query("boards")
+            .withIndex("by_org", (q) => q.eq("orgId", args.orgId))
+            .collect()
+            .then((boards) => boards.length);
     },
 });
