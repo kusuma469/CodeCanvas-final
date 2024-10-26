@@ -15,7 +15,12 @@ export const Navbar = () => {
     const { organization } = useOrganization();
     const router = useRouter();
     const { mutate, pending } = useApiMutation(api.board.create); // Adjust this to your actual API for room creation
-
+    const onJoinRoomClick = () => {
+        const roomId = "j57bfp99v64qj8n95sv3t7t9x1737w0c"; // Predefined room ID
+        toast.success("Joining room");
+        router.push(`/text-editor/${roomId}`); // Redirect to the secure room with roomId
+    };
+    
     const onCreateRoomClick = () => {
         if (!organization) {
             toast.error("Organization not found");
@@ -46,7 +51,7 @@ export const Navbar = () => {
             {/* Text Editor Button for larger screens, placed after Search Bar */}
             <div className="hidden lg:flex">
                 <Hint label="Text editor" side="right" sideOffset={10}>
-                    <Button size="icon" variant="board" onClick={onCreateRoomClick} disabled={pending}>
+                    <Button size="icon" variant="board" onClick={onJoinRoomClick} disabled={pending}>
                         <Pen />
                     </Button>
                 </Hint>
@@ -83,7 +88,7 @@ export const Navbar = () => {
                     }}
                 />
                 <Hint label="Text editor" side="right" sideOffset={10}>
-                    <Button size="icon" variant="board" onClick={onCreateRoomClick} disabled={pending}>
+                    <Button size="icon" variant="board" onClick={onJoinRoomClick} disabled={pending}>
                         <Pen />
                     </Button>
                 </Hint>

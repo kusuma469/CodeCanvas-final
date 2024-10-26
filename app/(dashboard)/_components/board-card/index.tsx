@@ -3,7 +3,7 @@ import { formatDistanceToNow } from "date-fns";
 import Link from "next/link";
 import Image from "next/image";
 import { Overlay } from "./overlay";
-import { useAuth } from "@clerk/clerk-react";
+import { useAuth } from "@clerk/nextjs";
 import { Footer } from "./footer";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Actions } from "@/components/actions";
