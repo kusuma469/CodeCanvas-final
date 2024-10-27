@@ -10,11 +10,22 @@ import {
 import { createRoomContext, createLiveblocksContext } from "@liveblocks/react";
 
 import { Layer,Color } from "./types/canvas";
+
+type UserInfo = {
+  name: string;
+  color: string;
+  picture: string;
+};
+
+export type UserAwareness = {
+  user?: UserInfo;
+};
+export type AwarenessList = [number, UserAwareness][];
+
 export const client = createClient({
   throttle: 16,
   authEndpoint: "/api/liveblocks-auth",
 });
-
 declare global {
   interface Liveblocks {
     // Each user's Presence, for useMyPresence, useOthers, etc.
@@ -35,10 +46,11 @@ declare global {
     // Custom user info set when authenticating with a secret key
     UserMeta: {
       id?: string;
-      info?: {
+      info: {
+        color?: string;
         
-        name?: string;
-        picture?: string;
+        name: string;
+        picture: string;
       };
     };
 
