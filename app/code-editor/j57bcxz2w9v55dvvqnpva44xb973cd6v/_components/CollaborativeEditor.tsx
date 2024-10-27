@@ -5,6 +5,7 @@ import { yCollab } from "y-codemirror.next";
 import { EditorView, basicSetup } from "codemirror";
 import { EditorState } from "@codemirror/state";
 import { javascript } from "@codemirror/lang-javascript";
+import {java} from "@codemirror/lang-java"
 import { python } from "@codemirror/lang-python"; // Import Python language support
 import { useCallback, useEffect, useState, useRef } from "react";
 import { LiveblocksYjsProvider } from "@liveblocks/yjs";
@@ -23,13 +24,17 @@ const languages = {
     name: 'Python',
     mode: python(),
   },
+  java: {
+    name: 'Java',
+    mode: java(),
+  },
 };
 
 export function CollaborativeEditor() {
   const room = useRoom();
   const [element, setElement] = useState<HTMLElement>();
   const [yUndoManager, setYUndoManager] = useState<Y.UndoManager>();
-  const [selectedLanguage, setSelectedLanguage] = useState<'javascript' | 'python'>('javascript'); // Default language
+  const [selectedLanguage, setSelectedLanguage] = useState<'javascript' | 'python' | 'java'>('javascript'); // Default language
   const [output, setOutput] = useState<string>(''); // Output from the compilation
   const viewRef = useRef<EditorView | null>(null); // Create a ref for EditorView
 
@@ -96,7 +101,7 @@ export function CollaborativeEditor() {
       setOutput("Error: No code to compile");
       return;
   }
-    let result;
+    //let result;
 
     try {
       const response = await fetch('http://localhost:5000/execute', {
@@ -104,7 +109,7 @@ export function CollaborativeEditor() {
           headers: {
               'Content-Type': 'application/json',
           },
-          body: JSON.stringify({ code }), // Send code to the server
+          body: JSON.stringify({ code,language: selectedLanguage  }), // Send code to the server
       });
 
       const data = await response.json();
@@ -133,7 +138,7 @@ export function CollaborativeEditor() {
         <select
           id="language"
           value={selectedLanguage}
-          onChange={(e) => setSelectedLanguage(e.target.value as 'javascript' | 'python')} // Type assertion for value
+          onChange={(e) => setSelectedLanguage(e.target.value as 'javascript' | 'python' | 'java')} // Type assertion for value
         >
           {Object.keys(languages).map((langKey) => (
             <option key={langKey} value={langKey}>

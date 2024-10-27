@@ -11,6 +11,7 @@
   "dependencies": {
     "@clerk/clerk-react": "^5.9.1",
     "@clerk/nextjs": "^5.6.0",
+    "@codemirror/lang-java": "^6.0.1",
     "@codemirror/lang-javascript": "^6.2.2",
     "@codemirror/lang-python": "^6.1.6",
     "@liveblocks/client": "^2.7.2",
