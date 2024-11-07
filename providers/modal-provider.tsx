@@ -1,5 +1,6 @@
 "use client";
 
+import { CodeRenameModal } from "@/components/modals/code-rename-modal";
 import { RenameModal } from "@/components/modals/rename-modal";
 import { useEffect, useState } from "react";
 
@@ -17,6 +18,7 @@ export const ModalProvider = () => {
     return (
         <>
             <RenameModal />
+            <CodeRenameModal />
         </>
     );
 };

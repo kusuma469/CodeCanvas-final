@@ -12,7 +12,6 @@ export function Avatars() {
           <Avatar key={connectionId} picture={info.picture} name={info.name} />
         );
       })}
-
       {currentUser && (
         <div className="relative ml-8 first:ml-0">
           <Avatar
@@ -32,6 +31,7 @@ export function Avatar({ picture, name }: { picture: string; name: string }) {
         src={picture}
         className={styles.avatar_picture}
         data-tooltip={name}
+        alt={name}
       />
     </div>
   );

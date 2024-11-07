@@ -60,13 +60,7 @@ export const Navbar = () => {
                     </Button>
                 </Hint>
             </div>
-            <div className="hidden lg:flex">
-                <Hint label="Code editor" side="right" sideOffset={10}>
-                    <Button size="icon" variant="board" onClick={onJoinRoomClickCode} disabled={pending}>
-                        <Code />
-                    </Button>
-                </Hint>
-            </div>
+            
             {/* Invite Button */}
             {organization && <InviteButton />}
 
@@ -102,11 +96,7 @@ export const Navbar = () => {
                         <Pen />
                     </Button>
                 </Hint>
-                <Hint label="Text editor" side="right" sideOffset={10}>
-                    <Button size="icon" variant="board" onClick={onJoinRoomClickCode} disabled={pending}>
-                        <Code />
-                    </Button>
-                </Hint>
+                
             </div>
         </div>
     );

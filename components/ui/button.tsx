@@ -21,6 +21,7 @@ const buttonVariants = cva(
         board: "hover:bg-blue-500/20 hover:text-blue-800",
         boardActive: "bg-blue-500/20 text-blue-800",
         boardDestructive: "text-destructive hover:bg-destructive/20", 
+        primary: "bg-blue-500 hover:bg-blue-600 text-white"
       },
       size: {
         default: "h-10 px-4 py-2",
