@@ -1,3 +1,4 @@
+//texteditor/editor.tsx
 "use client";
 
 import { LexicalComposer } from "@lexical/react/LexicalComposer";
@@ -17,11 +18,11 @@ import {
 import FloatingToolbar from "./floating-toolbar";
 import NotificationsPopover from "../notifications-popover";
 import Loading from "../loading";
+import { Bell } from "lucide-react";
 import VersionHistoryDialog from "../version-history-dialog";
 import { useThreads } from "@liveblocks/react/suspense";
 import { useIsMobile } from "./use-is-mobile";
-
-// Wrap your initial config with `liveblocksConfig`
+// Wrap your initial config with liveblocksConfig
 const initialConfig = liveblocksConfig({
   namespace: "Demo",
   nodes: [HeadingNode, QuoteNode, ListNode, ListItemNode],
@@ -30,7 +31,7 @@ const initialConfig = liveblocksConfig({
     throw error;
   },
 });
-
+import { Participants } from "@/app/board/[boardId]/_components/participants";
 export default function Editor() {
   const status = useEditorStatus();
 
@@ -44,7 +45,7 @@ export default function Editor() {
             <>
               <div className="h-[60px] flex items-center justify-end px-4 border-b border-border/80 bg-background">
                 <VersionHistoryDialog />
-                <h1>hi</h1>
+                <Bell/>
               </div>
 
               <div className="relative flex flex-row justify-between w-full py-16 xl:pl-[250px] pl-[100px] gap-[50px]">
@@ -56,7 +57,7 @@ export default function Editor() {
                     }
                     placeholder={
                       <p className="pointer-events-none absolute top-0 left-0 text-muted-foreground w-full h-full">
-                        Try mentioning a user with @
+                        Start Typing..
                       </p>
                     }
                     ErrorBoundary={LexicalErrorBoundary}
