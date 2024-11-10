@@ -43,9 +43,15 @@ const liveblocks = new Liveblocks({
                     isAuthorized = true;
                 }
             } catch {
-                // Not a valid board or code document
-            }
-        }
+                try {
+                    const document = await convex.query(api.textEditor.get, {
+                        id: room as Id<"textEditor">
+                    });
+                    if (document?.orgId === authorization.orgId) {
+                        isAuthorized = true;
+                    }
+            }   catch {}
+        }}
 
         if (!isAuthorized) {
             return new Response("Unauthorized", { status: 403 });

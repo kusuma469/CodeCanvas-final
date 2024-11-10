@@ -1,0 +1,763 @@
+// app/board/[boardId]/_components/file.tsx
+import { useState } from "react";
+import { FileLayer } from "@/types/canvas"; // Assuming you have FileLayer type defined in your types
+
+interface FileProps {
+    id: string;
+    layer: FileLayer;
+    onPointerDown: (e: React.PointerEvent, id: string) => void;
+    selectionColor?: string;
+}
+
+export const File = ({ id, layer, onPointerDown, selectionColor }: FileProps) => {
+    const { x, y, fileName, fileUrl } = layer; // Assuming the FileLayer contains fileName and fileUrl
+    const [file, setFile] = useState<File | null>(null);
+
+    const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+        const selectedFile = event.target.files?.[0];
+        if (selectedFile) {
+            setFile(selectedFile);
+            // Here, you would likely upload the file and generate a fileUrl.
+            // For now, we simulate the URL.
+        }
+    };
+
+    return (
+        <g
+            className="drop-shadow-md"
+            onPointerDown={(e) => onPointerDown(e, id)}
+            style={{
+                transform: `translate(${x}px, ${y}px)`,
+                position: "absolute",
+            }}
+        >
+            <rect
+                x={0}
+                y={0}
+                width={150} // Set the size for file attachment preview
+                height={50}
+                fill="#f4f4f4"
+                strokeWidth={1}
+                stroke={selectionColor || "transparent"}
+            />
+            {file ? (
+                <text x={10} y={25} fill="black" fontSize={12}>
+                    {file.name}
+                </text>
+            ) : (
+                <foreignObject x={10} y={10} width={130} height={30}>
+                    <input
+                        type="file"
+                        onChange={handleFileChange}
+                        className="w-full h-full bg-transparent border-none"
+                    />
+                </foreignObject>
+            )}
+        </g>
+    );
+};
+import { useState, useEffect } from "react";
+import { FileLayer } from "@/types/canvas";
+
+interface FileProps {
+    id: string;
+    layer: FileLayer;
+    onPointerDown: (e: React.PointerEvent, id: string) => void;
+    selectionColor?: string;
+}
+
+export const File = ({ id, layer, onPointerDown, selectionColor }: FileProps) => {
+    const { x, y } = layer;
+    const [currentFileName, setCurrentFileName] = useState<string | null>(null);
+    const [fileData, setFileData] = useState<string | null>(null);
+
+    // On mount, check for stored file data
+    useEffect(() => {
+        const storedFileName = localStorage.getItem(`${id}-name`);
+        const storedFileData = localStorage.getItem(`${id}-data`);
+        
+        if (storedFileName && storedFileData) {
+            setCurrentFileName(storedFileName);
+            setFileData(storedFileData);
+        }
+    }, [id]);
+
+    const handleFileChange = async (event: React.ChangeEvent<HTMLInputElement>) => {
+        const selectedFile = event.target.files?.[0];
+        if (selectedFile) {
+            try {
+                // Convert file to base64
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    const base64Data = e.target?.result as string;
+                    
+                    // Store both the file name and data
+                    localStorage.setItem(`${id}-name`, selectedFile.name);
+                    localStorage.setItem(`${id}-data`, base64Data);
+                    
+                    setCurrentFileName(selectedFile.name);
+                    setFileData(base64Data);
+                };
+                reader.readAsDataURL(selectedFile);
+            } catch (error) {
+                console.error('Error processing file:', error);
+            }
+        }
+    };
+
+    const handleFileOpen = () => {
+        if (fileData) {
+            // Create a new window/tab with the file content
+            const newWindow = window.open();
+            if (newWindow) {
+                newWindow.document.write(`
+                    <html>
+                        <head>
+                            <title>${currentFileName || 'File Preview'}</title>
+                            <style>
+                                body {
+                                    margin: 0;
+                                    padding: 0;
+                                    display: flex;
+                                    justify-content: center;
+                                    align-items: center;
+                                    min-height: 100vh;
+                                    background-color: #f5f5f5;
+                                }
+                                .content {
+                                    max-width: 100%;
+                                    max-height: 100vh;
+                                }
+                                img, object {
+                                    max-width: 100%;
+                                    height: auto;
+                                }
+                            </style>
+                        </head>
+                        <body>
+                            ${getFilePreviewElement(fileData, currentFileName)}
+                        </body>
+                    </html>
+                `);
+                newWindow.document.close();
+            }
+        }
+    };
+
+    // Helper function to determine file type and return appropriate preview element
+    const getFilePreviewElement = (data: string, fileName: string | null): string => {
+        const fileType = data.split(';')[0].split('/')[1];
+        
+        switch (fileType) {
+            case 'pdf':
+                return `<object data="${data}" type="application/pdf" width="100%" height="100vh">
+                    <p>Unable to display PDF. <a href="${data}" download="${fileName}">Download</a> instead.</p>
+                </object>`;
+            case 'jpeg':
+            case 'jpg':
+            case 'png':
+            case 'gif':
+            case 'webp':
+                return `<img src="${data}" alt="${fileName || 'Image preview'}" class="content">`;
+            default:
+                // For text-based files or unknown types, offer download
+                return `
+                    <div style="text-align: center; padding: 20px;">
+                        <p>Preview not available for this file type.</p>
+                        <a href="${data}" download="${fileName}" style="
+                            display: inline-block;
+                            padding: 10px 20px;
+                            background-color: #3B82F6;
+                            color: white;
+                            text-decoration: none;
+                            border-radius: 4px;
+                            margin-top: 10px;
+                        ">Download File</a>
+                    </div>
+                `;
+        }
+    };
+
+    return (
+        <g
+            className="drop-shadow-md"
+            onPointerDown={(e) => onPointerDown(e, id)}
+            style={{
+                transform: `translate(${x}px, ${y}px)`,
+                position: "absolute",
+            }}
+        >
+            <rect
+                x={0}
+                y={0}
+                width={150}
+                height={50}
+                fill="#f4f4f4"
+                strokeWidth={1}
+                stroke={selectionColor || "transparent"}
+                rx={4}
+                ry={4}
+            />
+            {currentFileName ? (
+                <g>
+                    <text 
+                        x={10} 
+                        y={25} 
+                        fill="black" 
+                        fontSize={12}
+                        className="truncate"
+                        textAnchor="start"
+                    >
+                        {currentFileName}
+                    </text>
+                    <foreignObject x={10} y={30} width={130} height={20}>
+                        <button
+                            onClick={handleFileOpen}
+                            className="w-full h-full bg-blue-500 hover:bg-blue-600 text-white text-xs rounded transition-colors"
+                        >
+                            Open File
+                        </button>
+                    </foreignObject>
+                </g>
+            ) : (
+                <foreignObject x={10} y={10} width={130} height={30}>
+                    <input
+                        type="file"
+                        onChange={handleFileChange}
+                        className="w-full h-full bg-transparent border-none cursor-pointer"
+                    />
+                </foreignObject>
+            )}
+        </g>
+    );
+};
+
+export default File;
+
+//app\board\[boardId]\_components\file.tsx
+import { useState, useEffect } from "react";
+import { FileLayer } from "@/types/canvas";
+
+interface FileProps {
+    id: string;
+    layer: FileLayer;
+    onPointerDown: (e: React.PointerEvent, id: string) => void;
+    selectionColor?: string;
+}
+
+export const File = ({ id, layer, onPointerDown, selectionColor }: FileProps) => {
+    const { x, y } = layer;
+    const [currentFileName, setCurrentFileName] = useState<string | null>(null);
+    const [fileData, setFileData] = useState<string | null>(null);
+
+    useEffect(() => {
+        const storedFileName = localStorage.getItem(`${id}-name`);
+        const storedFileData = localStorage.getItem(`${id}-data`);
+        
+        if (storedFileName && storedFileData) {
+            setCurrentFileName(storedFileName);
+            setFileData(storedFileData);
+        }
+    }, [id]);
+
+    // Add listener for storage events to update the component when changes occur
+    useEffect(() => {
+        const handleStorageChange = (e: StorageEvent) => {
+            if (e.key === `${id}-data`) {
+                setFileData(e.newValue);
+            }
+        };
+
+        window.addEventListener('storage', handleStorageChange);
+        return () => window.removeEventListener('storage', handleStorageChange);
+    }, [id]);
+
+    const handleFileChange = async (event: React.ChangeEvent<HTMLInputElement>) => {
+        const selectedFile = event.target.files?.[0];
+        if (selectedFile) {
+            try {
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    const content = e.target?.result as string;
+                    localStorage.setItem(`${id}-name`, selectedFile.name);
+                    localStorage.setItem(`${id}-data`, content);
+                    setCurrentFileName(selectedFile.name);
+                    setFileData(content);
+                };
+                reader.readAsText(selectedFile); // Read as text instead of base64
+            } catch (error) {
+                console.error('Error processing file:', error);
+            }
+        }
+    };
+
+    const handleFileOpen = () => {
+        // Instead of dynamically generating the editor URL based on file ID and name, open the specified URL
+        const editorUrl = "http://localhost:3000/text-editor/j57bfp99v64qj8n95sv3t7t9x1737w0c";
+        window.open(editorUrl, "_blank", "width=800,height=600");
+    };
+    
+
+    return (
+        <g
+            className="drop-shadow-md"
+            onPointerDown={(e) => onPointerDown(e, id)}
+            style={{
+                transform: `translate(${x}px, ${y}px)`,
+                position: "absolute",
+            }}
+        >
+            <rect
+                x={0}
+                y={0}
+                width={150}
+                height={50}
+                fill="#f4f4f4"
+                strokeWidth={1}
+                stroke={selectionColor || "transparent"}
+                rx={4}
+                ry={4}
+            />
+            {currentFileName ? (
+                <g>
+                    <text 
+                        x={10} 
+                        y={25} 
+                        fill="black" 
+                        fontSize={12}
+                        className="truncate"
+                        textAnchor="start"
+                    >
+                        {currentFileName}
+                    </text>
+                    <foreignObject x={10} y={30} width={130} height={20}>
+                        <button
+                            onClick={handleFileOpen}
+                            className="w-full h-full bg-blue-500 hover:bg-blue-600 text-white text-xs rounded transition-colors"
+                        >
+                            Open File
+                        </button>
+                    </foreignObject>
+                </g>
+            ) : (
+                <foreignObject x={10} y={10} width={130} height={30}>
+                    <input
+                        type="file"
+                        onChange={handleFileChange}
+                        className="w-full h-full bg-transparent border-none cursor-pointer"
+                    />
+                </foreignObject>
+            )}
+        </g>
+    );
+};
+
+"use client";
+
+import { useCallback, useEffect } from "react";
+import { Skeleton } from "@/components/ui/skeleton";
+import { ToolButton } from "./tool-button";
+import {
+    Circle,
+    MousePointer2,
+    Pencil,
+    Redo2,
+    Square,
+    StickyNote,
+    TypeIcon,
+    Undo2,
+    Grid,
+    Grip,
+    File,
+} from "lucide-react";
+import { CanvasMode, CanvasState, LayerType } from "@/types/canvas";
+import { useSelf } from "@liveblocks/react/suspense";
+import { useOrganization } from "@clerk/nextjs";
+
+interface ToolbarProps {
+    canvasState: CanvasState;
+    setCanvasState: (newState: CanvasState) => void;
+    undo: () => void;
+    redo: () => void;
+    canUndo: boolean;
+    canRedo: boolean;
+    toggleGrid: () => void;
+    toggleDots: () => void;
+}
+
+const Toolbar = ({
+    canvasState,
+    setCanvasState,
+    undo,
+    redo,
+    canUndo,
+    canRedo,
+    toggleGrid,
+    toggleDots,
+}: ToolbarProps) => {
+    const selection = useSelf((me) => me.presence.selection);
+    const { organization } = useOrganization();
+
+    const onFileButtonClick = useCallback(() => {
+        if (!organization) {
+            console.error("No organization context found.");
+            return;
+        }
+
+        setCanvasState({
+            mode: CanvasMode.Inserting,
+            layerType: LayerType.File,
+        });
+    }, [organization, setCanvasState]);
+
+    const handleKeyDown = useCallback((e: KeyboardEvent) => {
+        if (selection?.length > 0) return;
+
+        if (e.ctrlKey) {
+            switch (e.key.toLowerCase()) {
+                case 'a':
+                    e.preventDefault();
+                    setCanvasState({ mode: CanvasMode.None });
+                    break;
+                case 't':
+                    e.preventDefault();
+                    setCanvasState({
+                        layerType: LayerType.Text,
+                        mode: CanvasMode.Inserting,
+                    });
+                    break;
+                case 'n':
+                    e.preventDefault();
+                    setCanvasState({
+                        mode: CanvasMode.Inserting,
+                        layerType: LayerType.Note,
+                    });
+                    break;
+                case 'r':
+                    e.preventDefault();
+                    setCanvasState({
+                        mode: CanvasMode.Inserting,
+                        layerType: LayerType.Rectangle,
+                    });
+                    break;
+                case 'e':
+                    e.preventDefault();
+                    setCanvasState({
+                        mode: CanvasMode.Inserting,
+                        layerType: LayerType.Ellipse,
+                    });
+                    break;
+            }
+        }
+    }, [selection, setCanvasState]);
+
+    useEffect(() => {
+        window.addEventListener("keydown", handleKeyDown);
+        return () => window.removeEventListener("keydown", handleKeyDown);
+    }, [handleKeyDown]);
+
+    return (
+        <div className="absolute top-[50%] -translate-y-[50%] left-2 flex flex-col gap-y-4">
+            <div className="bg-white rounded-md p-1.5 flex gap-1 flex-col items-center shadow-md">
+                <ToolButton
+                    label="Select (Ctrl+A)"
+                    icon={MousePointer2}
+                    onClick={() => setCanvasState({ mode: CanvasMode.None })}
+                    isActive={
+                        canvasState.mode === CanvasMode.None ||
+                        canvasState.mode === CanvasMode.Translating ||
+                        canvasState.mode === CanvasMode.SelectionNet ||
+                        canvasState.mode === CanvasMode.Pressing ||
+                        canvasState.mode === CanvasMode.Resizing
+                    }
+                />
+                <ToolButton
+                    label="Text (Ctrl+T)"
+                    icon={TypeIcon}
+                    onClick={() =>
+                        setCanvasState({
+                            layerType: LayerType.Text,
+                            mode: CanvasMode.Inserting,
+                        })
+                    }
+                    isActive={
+                        canvasState.mode === CanvasMode.Inserting &&
+                        canvasState.layerType === LayerType.Text
+                    }
+                />
+                <ToolButton
+                    label="Sticky Note (Ctrl+N)"
+                    icon={StickyNote}
+                    onClick={() =>
+                        setCanvasState({
+                            mode: CanvasMode.Inserting,
+                            layerType: LayerType.Note,
+                        })
+                    }
+                    isActive={
+                        canvasState.mode === CanvasMode.Inserting &&
+                        canvasState.layerType === LayerType.Note
+                    }
+                />
+                <ToolButton
+                    label="Rectangle (Ctrl+R)"
+                    icon={Square}
+                    onClick={() =>
+                        setCanvasState({
+                            mode: CanvasMode.Inserting,
+                            layerType: LayerType.Rectangle,
+                        })
+                    }
+                    isActive={
+                        canvasState.mode === CanvasMode.Inserting &&
+                        canvasState.layerType === LayerType.Rectangle
+                    }
+                />
+                <ToolButton
+                    label="File"
+                    icon={File}
+                    onClick={() =>
+                        setCanvasState({
+                            mode: CanvasMode.Inserting,
+                            layerType: LayerType.File,
+                        })
+                    }
+                    isActive={
+                        canvasState.mode === CanvasMode.Inserting &&
+                        canvasState.layerType === LayerType.File
+                    }
+                />
+                <ToolButton
+                    label="Ellipse (Ctrl+E)"
+                    icon={Circle}
+                    onClick={() =>
+                        setCanvasState({
+                            mode: CanvasMode.Inserting,
+                            layerType: LayerType.Ellipse,
+                        })
+                    }
+                    isActive={
+                        canvasState.mode === CanvasMode.Inserting &&
+                        canvasState.layerType === LayerType.Ellipse
+                    }
+                />
+                <ToolButton
+                    label="Pen"
+                    icon={Pencil}
+                    onClick={() =>
+                        setCanvasState({
+                            mode: CanvasMode.Pencil,
+                        })
+                    }
+                    isActive={canvasState.mode === CanvasMode.Pencil}
+                />
+            </div>
+            <div className="bg-white rounded-md p-1.5 flex flex-col items-center shadow-md">
+                <ToolButton
+                    label="Undo (Ctrl+Z)"
+                    icon={Undo2}
+                    onClick={undo}
+                    isDisabled={!canUndo}
+                />
+                <ToolButton
+                    label="Redo (Ctrl+Shift+Z)"
+                    icon={Redo2}
+                    onClick={redo}
+                    isDisabled={!canRedo}
+                />
+                <ToolButton
+                    label="Toggle Grid"
+                    icon={Grid}
+                    onClick={toggleGrid}
+                />
+                <ToolButton
+                    label="Toggle dots"
+                    icon={Grip}
+                    onClick={toggleDots}
+                />
+            </div>
+        </div>
+    );
+};
+
+export const ToolbarSkeleton = () => {
+    return (
+        <div className="absolute top-[50%] -translate-y-[50%] left-2 flex flex-col gap-y-4 rounded-md animate-shimmer bg-gradient-to-r from-gray-300 via-gray-200 to-gray-300 bg-[length:200%_100%] h-[360px] w-[52px]">
+            <Skeleton />
+        </div>
+    );
+};
+
+export default Toolbar;
+
+"use client";
+
+import { useState, useEffect, useCallback } from "react";
+import { FileLayer } from "@/types/canvas";
+import { useOrganization } from "@clerk/nextjs";
+import { toast } from "sonner";
+import { useApiMutation } from "@/hooks/use-api-mutation";
+import { useRouter } from "next/navigation";
+import { api } from "@/convex/_generated/api";
+
+export interface FileProps {
+    id: string;
+    layer: FileLayer;
+    onPointerDown: (e: React.PointerEvent, id: string) => void;
+    selectionColor?: string;
+}
+
+export const File = ({ id, layer, onPointerDown, selectionColor }: FileProps) => {
+    const { x, y } = layer;
+    const router = useRouter();
+    const [currentFileName, setCurrentFileName] = useState<string | null>(null);
+    const [fileData, setFileData] = useState<string | null>(null);
+    const [roomLink, setRoomLink] = useState<string | null>(null);
+    const { organization } = useOrganization();
+    const { mutate, pending } = useApiMutation(api.textEditor.create);
+
+    // Load stored data from localStorage
+    useEffect(() => {
+        if (typeof window !== 'undefined') {
+            const storedFileName = localStorage.getItem(`${id}-name`);
+            const storedFileData = localStorage.getItem(`${id}-data`);
+            const storedRoomLink = localStorage.getItem(`${id}-roomLink`);
+
+            if (storedFileName && storedFileData) {
+                setCurrentFileName(storedFileName);
+                setFileData(storedFileData);
+                setRoomLink(storedRoomLink);
+            }
+        }
+    }, [id]);
+
+    // Handle storage changes
+    useEffect(() => {
+        const handleStorageChange = (e: StorageEvent) => {
+            if (e.key === `${id}-data`) {
+                setFileData(e.newValue);
+            }
+        };
+
+        if (typeof window !== 'undefined') {
+            window.addEventListener('storage', handleStorageChange);
+            return () => window.removeEventListener('storage', handleStorageChange);
+        }
+    }, [id]);
+
+    // Handle file change
+    const handleFileChange = useCallback(async (event: React.ChangeEvent<HTMLInputElement>) => {
+        const selectedFile = event.target.files?.[0];
+        if (!selectedFile) return;
+
+        try {
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                const content = e.target?.result as string;
+                if (typeof window !== 'undefined') {
+                    localStorage.setItem(`${id}-name`, selectedFile.name);
+                    localStorage.setItem(`${id}-data`, content);
+                }
+                setCurrentFileName(selectedFile.name);
+                setFileData(content);
+            };
+            reader.readAsText(selectedFile);
+        } catch (error) {
+            console.error('Error processing file:', error);
+            toast.error('Failed to process file');
+        }
+    }, [id]);
+
+    // Create room
+    const onCreateRoomClick = useCallback(async () => {
+        if (!organization) {
+            toast.error("Organization not found");
+            return;
+        }
+
+        try {
+            const roomId = await mutate({
+                orgId: organization.id,
+                title: currentFileName || "Untitled Room",
+            });
+
+            const newRoomLink = `/text/${roomId}`;
+            if (typeof window !== 'undefined') {
+                localStorage.setItem(`${id}-roomLink`, newRoomLink);
+            }
+            setRoomLink(newRoomLink);
+            toast.success("Room created");
+            router.push(newRoomLink);
+        } catch (error) {
+            console.error('Error creating room:', error);
+            toast.error("Failed to create room");
+        }
+    }, [organization, mutate, currentFileName, id, router]);
+
+    if (typeof window === 'undefined') {
+        return null; // Return null during SSR
+    }
+
+    return (
+        <g
+            className="drop-shadow-md cursor-pointer"
+            onPointerDown={(e) => onPointerDown(e, id)}
+            style={{
+                transform: `translate(${x}px, ${y}px)`,
+            }}
+        >
+            <rect
+                x={0}
+                y={0}
+                width={150}
+                height={50}
+                fill="#f4f4f4"
+                strokeWidth={1}
+                stroke={selectionColor || "transparent"}
+                rx={4}
+                ry={4}
+            />
+            {currentFileName ? (
+                <g>
+                    <text 
+                        x={10} 
+                        y={25} 
+                        fill="black" 
+                        fontSize={12}
+                        className="truncate"
+                        textAnchor="start"
+                    >
+                        {currentFileName}
+                    </text>
+                    <foreignObject x={10} y={30} width={130} height={20}>
+                        {roomLink ? (
+                            <a 
+                                href={roomLink}
+                                className="block w-full h-full bg-blue-500 hover:bg-blue-600 text-white text-xs rounded transition-colors text-center leading-[20px]"
+                            >
+                                Open File
+                            </a>
+                        ) : (
+                            <button
+                                onClick={onCreateRoomClick}
+                                disabled={pending}
+                                className="w-full h-full bg-blue-500 hover:bg-blue-600 text-white text-xs rounded transition-colors disabled:opacity-50"
+                            >
+                                {pending ? 'Creating...' : 'Create Room'}
+                            </button>
+                        )}
+                    </foreignObject>
+                </g>
+            ) : (
+                <foreignObject x={10} y={10} width={130} height={30}>
+                    <input
+                        type="file"
+                        accept=".txt,.md,.js,.ts,.jsx,.tsx,.json,.csv"
+                        onChange={handleFileChange}
+                        className="w-full h-full bg-transparent border-none cursor-pointer"
+                    />
+                </foreignObject>
+            )}
+        </g>
+    );
+};

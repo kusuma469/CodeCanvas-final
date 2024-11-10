@@ -1,3 +1,4 @@
+//app\board\[boardId]\_components\rectangle.tsx
 import { colorToCss } from "@/lib/utils";
 import { RectangleLayer } from "@/types/canvas";
 

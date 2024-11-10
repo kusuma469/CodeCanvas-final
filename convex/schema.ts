@@ -38,4 +38,19 @@ export default defineSchema({
         .index("by_user_org", ["userId", "orgId"])
         .index("by_user_board", ["userId", "boardId"])
         .index("by_user_board_org", ["userId", "boardId", "orgId"]),
+        textEditor: defineTable({
+    authorId: v.string(),
+    orgId: v.string(),
+    title: v.string(),
+  }),
+  fileData: defineTable({  // Changed from "files" to "fileData" to avoid conflicts
+    boardId: v.string(),
+    title: v.string(),
+    orgId: v.string(),
+    content: v.string(),
+    roomLink: v.union(v.string(), v.null()),
+    authorId: v.string(),
+    lastModified: v.number(),
+  }).index("by_boardId", ["boardId"]),
+
 });

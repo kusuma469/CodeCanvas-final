@@ -56,7 +56,7 @@ type Storage = {
     content: string;
     language: string;
   }>;
-  compilationState: LiveObject<CompilationState>;
+  compilationState?: LiveObject<CompilationState>;
 };
 
 type UserMeta = {

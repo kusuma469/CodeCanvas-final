@@ -1,3 +1,5 @@
+//app\board\[boardId]\_components\canvas.tsx
+
 "use client";
 
 import Info from "./info";
@@ -106,6 +108,7 @@ export const Canvas = ({ boardId }: CanvasProps) => {
                 | LayerType.Ellipse
                 | LayerType.Rectangle
                 | LayerType.Text
+                | LayerType.File
                 | LayerType.Note,
             position: Point
         ) => {

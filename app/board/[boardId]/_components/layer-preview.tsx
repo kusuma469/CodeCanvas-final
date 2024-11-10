@@ -9,6 +9,7 @@ import { Text } from "./text";
 import { Note } from "./note";
 import { Path } from "./path";
 import { colorToCss } from "@/lib/utils";
+import { File } from "./file";
 
 interface LayerPreviewProps {
     id: string;
@@ -69,8 +70,17 @@ export const LayerPreview = memo(
                         selectionColor={selectionColor}
                     />
                 );
-
+            case LayerType.File:
+                return (
+                        <File
+                            id={id}
+                            layer={layer}
+                            onPointerDown={onLayerPointerDown}
+                            selectionColor={selectionColor}
+                        />
+                );
             default:
+                console.log(layer);
                 console.warn("Unsupported layer type");
         }
     }
