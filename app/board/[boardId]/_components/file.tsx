@@ -23,8 +23,8 @@ export const File = ({ id, layer, onPointerDown, selectionColor }: FileProps) =>
   const { user } = useUser();
   
   // State
-  const [currentFileName, setCurrentFileName] = useState<string | null>(null);
-  const [fileData, setFileData] = useState<string | null>(null);
+  const [isEditing, setIsEditing] = useState(false);
+  const [fileName, setFileName] = useState<string>("Untitled");
   const [roomLink, setRoomLink] = useState<string | null>(null);
 
   // Convex mutations and queries
@@ -35,39 +35,31 @@ export const File = ({ id, layer, onPointerDown, selectionColor }: FileProps) =>
   // Load data from database
   useEffect(() => {
     if (fileInfo) {
-      setCurrentFileName(fileInfo.title || null);
-      setFileData(fileInfo.content || null);
+      setFileName(fileInfo.title || "Untitled");
       setRoomLink(fileInfo.roomLink || null);
     }
   }, [fileInfo]);
 
-  // Handle file change
-  const handleFileChange = useCallback(async (event: React.ChangeEvent<HTMLInputElement>) => {
-    const selectedFile = event.target.files?.[0];
-    if (!selectedFile || !organization || !user) return;
+  // Handle file rename
+  const handleRename = useCallback(async (newName: string) => {
+    if (!organization || !user) return;
 
     try {
-      const reader = new FileReader();
-      reader.onload = async (e) => {
-        const content = e.target?.result as string;
-        
-        // Save to database
-        await saveFile({
-          boardId: id,
-          orgId: organization.id,
-          title: selectedFile.name,
-          content: content,
-          roomLink: null,
-          authorId: user.id,
-        });
+      await saveFile({
+        boardId: id,
+        orgId: organization.id,
+        title: newName,
+        content: "",  // Initialize with empty content
+        roomLink: null,
+        authorId: user.id,
+      });
 
-        setCurrentFileName(selectedFile.name);
-        setFileData(content);
-      };
-      reader.readAsText(selectedFile);
+      setFileName(newName);
+      setIsEditing(false);
+      toast.success("File renamed");
     } catch (error) {
-      console.error('Error processing file:', error);
-      toast.error('Failed to process file');
+      console.error('Error renaming file:', error);
+      toast.error("Failed to rename file");
     }
   }, [id, organization, user, saveFile]);
 
@@ -81,7 +73,7 @@ export const File = ({ id, layer, onPointerDown, selectionColor }: FileProps) =>
     try {
       const roomId = await createRoom.mutate({
         orgId: organization.id,
-        title: currentFileName || "Untitled Room",
+        title: fileName,
       });
 
       const newRoomLink = `/text/${roomId}`;
@@ -90,8 +82,8 @@ export const File = ({ id, layer, onPointerDown, selectionColor }: FileProps) =>
       await saveFile({
         boardId: id,
         orgId: organization.id,
-        title: currentFileName!,
-        content: fileData!,
+        title: fileName,
+        content: "",
         roomLink: newRoomLink,
         authorId: user.id,
       });
@@ -103,7 +95,20 @@ export const File = ({ id, layer, onPointerDown, selectionColor }: FileProps) =>
       console.error('Error creating room:', error);
       toast.error("Failed to create room");
     }
-  }, [organization, user, createRoom, currentFileName, fileData, id, router, saveFile]);
+  }, [organization, user, createRoom, fileName, id, router, saveFile]);
+
+  // Handle key press for rename input
+  const handleKeyPress = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === 'Enter') {
+      const input = e.target as HTMLInputElement;
+      const newName = input.value.trim();
+      if (newName) {
+        handleRename(newName);
+      }
+    } else if (e.key === 'Escape') {
+      setIsEditing(false);
+    }
+  };
 
   return (
     <g
@@ -124,47 +129,51 @@ export const File = ({ id, layer, onPointerDown, selectionColor }: FileProps) =>
         rx={4}
         ry={4}
       />
-      {currentFileName ? (
-        <g>
-          <text 
-            x={10} 
-            y={25} 
-            fill="black" 
-            fontSize={12}
-            className="truncate"
-            textAnchor="start"
-          >
-            {currentFileName}
-          </text>
-          <foreignObject x={10} y={30} width={130} height={20}>
-            {roomLink ? (
-              <a 
-                href={roomLink}
-                className="block w-full h-full bg-blue-500 hover:bg-blue-600 text-white text-xs rounded transition-colors text-center leading-[20px]"
-              >
-                Open File
-              </a>
-            ) : (
-              <button
-                onClick={onCreateRoomClick}
-                disabled={createRoom.pending}
-                className="w-full h-full bg-blue-500 hover:bg-blue-600 text-white text-xs rounded transition-colors disabled:opacity-50"
-              >
-                {createRoom.pending ? 'Creating...' : 'Create Room'}
-              </button>
-            )}
-          </foreignObject>
-        </g>
-      ) : (
-        <foreignObject x={10} y={10} width={130} height={30}>
-          <input
-            type="file"
-            accept=".txt,.md,.js,.ts,.jsx,.tsx,.json,.csv"
-            onChange={handleFileChange}
-            className="w-full h-full bg-transparent border-none cursor-pointer"
-          />
+      <g>
+        <foreignObject x={10} y={8} width={130} height={24}>
+          {isEditing ? (
+            <input
+              type="text"
+              defaultValue={fileName}
+              autoFocus
+              onBlur={(e) => {
+                const newName = e.target.value.trim();
+                if (newName) {
+                  handleRename(newName);
+                }
+                setIsEditing(false);
+              }}
+              onKeyDown={handleKeyPress}
+              className="w-full px-1 text-sm border rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+            />
+          ) : (
+            <button
+              onClick={() => setIsEditing(true)}
+              className="w-full text-left text-sm truncate px-1 hover:bg-gray-100 rounded"
+            >
+              {fileName}
+            </button>
+          )}
         </foreignObject>
-      )}
+        <foreignObject x={10} y={30} width={130} height={20}>
+          {roomLink ? (
+            <a 
+              href={roomLink}
+              className="block w-full h-full bg-blue-500 hover:bg-blue-600 text-white text-xs rounded transition-colors text-center leading-[20px]"
+            >
+              Open File
+            </a>
+          ) : (
+            <button
+              onClick={onCreateRoomClick}
+              disabled={createRoom.pending}
+              className="w-full h-full bg-blue-500 hover:bg-blue-600 text-white text-xs rounded transition-colors disabled:opacity-50"
+            >
+              {createRoom.pending ? 'Creating...' : 'Create Room'}
+            </button>
+          )}
+        </foreignObject>
+      </g>
     </g>
   );
-}
+};
