@@ -250,6 +250,7 @@ export function createDOMRange(
     range.setStart(anchorDOM, anchorOffset);
     range.setEnd(focusDOM, focusOffset);
   } catch (e) {
+    console.log(e)
     return null;
   }
 

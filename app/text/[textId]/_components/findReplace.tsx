@@ -6,6 +6,8 @@ import {
   $createRangeSelection,
   $setSelection,
   TextNode,
+  LexicalNode,
+  ElementNode
 } from 'lexical';
 import { Search, ArrowRight, ArrowLeft } from 'lucide-react';
 import {
@@ -38,10 +40,10 @@ export function FindReplace({ isOpen, onClose }: { isOpen: boolean; onClose: () 
     editor.getEditorState().read(() => {
       const root = $getRoot();
       
-      const traverseNodes = (node: any) => { // Explicitly define 'node' type here as 'any'
+      const traverseNodes = (node: LexicalNode) => { // Explicitly define 'node' type here as 'any'
         if (node instanceof TextNode) {
           textNodes.push(node);
-        } else if (node.getChildren) {
+        } else if (node instanceof ElementNode) {
           node.getChildren().forEach(traverseNodes);
         }
       };

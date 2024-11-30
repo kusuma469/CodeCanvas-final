@@ -44,7 +44,8 @@ const Toolbar = ({
 }: ToolbarProps) => {
     const selection = useSelf((me) => me.presence.selection);
     const { organization } = useOrganization();
-
+    console.log(organization)
+    /*
     const onFileButtonClick = useCallback(() => {
         if (!organization) {
             console.error("No organization context found.");
@@ -55,7 +56,7 @@ const Toolbar = ({
             mode: CanvasMode.Inserting,
             layerType: LayerType.File,
         });
-    }, [organization, setCanvasState]);
+    }, [organization, setCanvasState]); */
 
     const handleKeyDown = useCallback((e: KeyboardEvent) => {
         if (selection?.length > 0) return;

@@ -1,4 +1,4 @@
-import { ClerkProvider, SignInButton, SignedIn, SignedOut, UserButton } from '@clerk/nextjs';
+import {  SignInButton, SignedIn, SignedOut,  } from '@clerk/nextjs';
 import './globals.css';
 import { Toaster } from 'sonner';
 import { ConvexClientProvider } from '@/providers/convex-client-provider'; // Import ConvexProvider

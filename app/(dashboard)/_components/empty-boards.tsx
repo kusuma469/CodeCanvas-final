@@ -2,7 +2,7 @@
 
 import { Button } from "@/components/ui/button";
 import Image from "next/image";
-import { useMutation } from "convex/react";
+//import { useMutation } from "convex/react";
 import { api } from "@/convex/_generated/api";
 import { useOrganization } from "@clerk/nextjs";
 import { useApiMutation } from "@/hooks/use-api-mutation";
@@ -21,7 +21,7 @@ export const EmptyBoards = () => {
             orgId: organization.id,
             title: "Untitled"
         })
-        .then((id) => {
+        .then(() => {
             toast.success("Board created");
         })
         .catch(() => toast.error("Failed to create a board"));

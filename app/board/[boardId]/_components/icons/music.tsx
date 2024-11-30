@@ -13,9 +13,9 @@ export const MusicIcon = ({
     id,
     layer,
     onPointerDown,
-    selectionColor,
+    //selectionColor,
 }: MusicIconProps) => {
-    const { x, y, width, height, fill } = layer;
+    const { x, y,  fill } = layer;
 
     return (
         <g

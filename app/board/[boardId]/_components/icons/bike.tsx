@@ -1,10 +1,10 @@
 // CloudIcon.tsx
 import { colorToCss } from "@/lib/utils";
-import { IconLayer } from "@/types/canvas";
+import { BikeLayer } from "@/types/canvas";
 
 interface BikeIconProps {
     id: string;
-    layer: IconLayer;
+    layer: BikeLayer;
     onPointerDown: (e: React.PointerEvent, id: string) => void;
     selectionColor?: string;
 }
@@ -13,9 +13,9 @@ export const BikeIcon = ({
     id,
     layer,
     onPointerDown,
-    selectionColor,
+    //selectionColor,
 }: BikeIconProps) => {
-    const { x, y, width, height, fill } = layer;
+    const { x, y,  fill } = layer;
 
     return (
         <g

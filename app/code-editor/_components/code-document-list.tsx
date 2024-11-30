@@ -4,9 +4,9 @@ import { useQuery } from "convex/react";
 import { api } from "@/convex/_generated/api";
 import { NewDocumentButton } from "./new-document-button";
 import { CodeDocumentCard } from "./code-document-card";
-import { Id } from "@/convex/_generated/dataModel";
-import { useSearchParams } from "next/navigation";
-
+//import { Id } from "@/convex/_generated/dataModel";
+//import { useSearchParams } from "next/navigation";
+/*
 interface CodeDocument {
     _id: Id<"codeDocuments">;
     _creationTime: number;
@@ -18,10 +18,11 @@ interface CodeDocument {
     imageUrl: string;
     lastModified: number;
     content?: string;
-}
+}*/
 
 interface CodeDocumentListProps {
     orgId: string;
+    searchTerm?: string;
 }
 
 const languageImages = {
@@ -35,14 +36,15 @@ const languageImages = {
     default: "/placeholders/1.svg",
 };
 
-export const CodeDocumentList = ({ orgId }: CodeDocumentListProps) => {
-    const searchParams = useSearchParams();
-    const searchTerm = searchParams.get("search");
-
+export const CodeDocumentList = ({ orgId,searchTerm }: CodeDocumentListProps) => {
+    
+    const searchResults = useQuery(api.codeDocuments.searchByTitle, { 
+        orgId, 
+        searchTerm: searchTerm || "" 
+    });
+    const allDocuments = useQuery(api.codeDocuments.get, { orgId });
     // Conditional query logic
-    const data = searchTerm
-        ? useQuery(api.codeDocuments.searchByTitle, { orgId, searchTerm })
-        : useQuery(api.codeDocuments.get, { orgId });
+    const data = searchTerm ? searchResults : allDocuments;
 
     if (data === undefined) {
         return (

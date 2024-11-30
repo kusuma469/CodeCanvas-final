@@ -22,7 +22,7 @@ const CodeEditorPage = ({
             ) : (
                 <CodeDocumentList 
                     orgId={organization.id}
-                    query={searchParams}
+                    searchTerm={searchParams.search}
                 />
             )}
         </div>

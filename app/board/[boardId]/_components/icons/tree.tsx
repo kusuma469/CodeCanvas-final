@@ -15,7 +15,7 @@ export const TreeIcon = ({
     onPointerDown,
     selectionColor,
 }: TreeIconProps) => {
-    const { x, y, width, height, fill } = layer;
+    const { x, y, fill } = layer;
 
     return (
         <g

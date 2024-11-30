@@ -1,5 +1,5 @@
 import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
-import { $getRoot, $isElementNode } from "lexical";
+import { $getRoot,} from "lexical";
 import { jsPDF } from "jspdf";
 import { FileDown } from 'lucide-react';
 import { Button } from "@/components/ui/button";

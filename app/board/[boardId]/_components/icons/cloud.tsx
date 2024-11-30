@@ -15,7 +15,7 @@ export const CloudIcon = ({
     onPointerDown,
     selectionColor,
 }: IconProps) => {
-    const { x, y, width, height, fill } = layer;
+    const { x, y, fill } = layer;
 
     return (
         <path

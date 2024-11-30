@@ -9,6 +9,10 @@ import {
   useFormContext,
   type FieldValues,
   type Path,
+  type Control,
+ // type ControllerProps,
+  type ControllerRenderProps,
+  type FieldError,
 } from "react-hook-form";
 
 import { Label } from "@/components/ui/label";
@@ -16,28 +20,36 @@ import { cn } from "@/lib/utils";
 
 const Form = FormProvider;
 
-type FormFieldContextValue<TFieldValues extends FieldValues> = {
+type FormFieldContextValue<TFieldValues extends FieldValues = FieldValues> = {
   name: Path<TFieldValues>;
 };
 
-const FormFieldContext = React.createContext<FormFieldContextValue<any>>({} as FormFieldContextValue<any>);
+const FormFieldContext = React.createContext<FormFieldContextValue>({} as FormFieldContextValue);
+
+type FormFieldProps<
+  TFieldValues extends FieldValues = FieldValues,
+  TName extends Path<TFieldValues> = Path<TFieldValues>
+> = {
+  name: TName;
+  control: Control<TFieldValues>;
+  render: (props: {
+    field: ControllerRenderProps<TFieldValues, TName>;
+    fieldState: { error?: FieldError };
+  }) => React.ReactElement;
+};
 
 const FormField = <
-  TFieldValues extends FieldValues
+  TFieldValues extends FieldValues = FieldValues,
+  TName extends Path<TFieldValues> = Path<TFieldValues>
 >({
   ...props
-}: {
-  name: Path<TFieldValues>;
-  control: any;
-  render: any;
-}) => {
+}: FormFieldProps<TFieldValues, TName>) => {
   return (
     <FormFieldContext.Provider value={{ name: props.name }}>
       <Controller {...props} />
     </FormFieldContext.Provider>
   );
 };
-
 const useFormField = () => {
   const fieldContext = React.useContext(FormFieldContext);
   const itemContext = React.useContext(FormItemContext);

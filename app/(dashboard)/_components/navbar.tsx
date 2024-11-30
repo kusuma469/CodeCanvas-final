@@ -5,7 +5,7 @@ import { SearchInput } from "./search-input";
 import { InviteButton } from "./invite-button";
 import { Hint } from "@/components/hint";
 import { Button } from "@/components/ui/button";
-import { Pen,Code } from "lucide-react";
+import { Pen } from "lucide-react";
 import { useRouter } from "next/navigation"; // For navigation
 import { useApiMutation } from "@/hooks/use-api-mutation"; // For API call to create room
 import { api } from "@/convex/_generated/api"; // Your API endpoint for room creation
@@ -15,12 +15,13 @@ export const Navbar = () => {
     const { organization } = useOrganization();
     const router = useRouter();
     const { mutate, pending } = useApiMutation(api.board.create); // Adjust this to your actual API for room creation
+    console.log(mutate)
     const onJoinRoomClickText = () => {
         const roomId = "j57bfp99v64qj8n95sv3t7t9x1737w0c"; // Predefined room ID
         toast.success("Joining room");
         router.push(`/text-editor/${roomId}`); // Redirect to the secure room with roomId
     };
-    const onJoinRoomClickCode = () => {
+    /*const onJoinRoomClickCode = () => {
         const roomId = "j57bcxz2w9v55dvvqnpva44xb973cd6v"; // Predefined room ID
         toast.success("Joining room");
         router.push(`/code-editor/${roomId}`); // Redirect to the secure room with roomId
@@ -43,7 +44,7 @@ export const Navbar = () => {
         .catch(() => {
             toast.error("Failed to create room");
         });
-    };
+    };*/
 
     return (
         <div className="flex items-center gap-x-4 p-5">

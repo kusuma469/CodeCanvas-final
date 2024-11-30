@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { 
     Circle, Square, Triangle, Star, Heart, 
     ArrowRight, Cloud, Sun, Moon, 
-    Umbrella, Computer, Smartphone,
+     Computer, Smartphone,
     Car, Bike, Trees, Home,
     Music, Camera
 } from 'lucide-react';
@@ -338,7 +338,7 @@ interface AutoDrawSuggestionsProps {
 const AutoDrawSuggestions = ({ 
     points,
     onSelectShape,
-    camera,
+   // camera,
     onKeepFreehand
 }: AutoDrawSuggestionsProps) => {
     const [suggestions, setSuggestions] = useState<Array<{ type: string; score: number }>>([]);

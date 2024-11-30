@@ -16,7 +16,7 @@ export const HeartIcon = ({
     onPointerDown,
     selectionColor,
 }: HeartIconProps) => {
-    const { x, y, width, height, fill } = layer;
+    const { x, y,  fill } = layer;
 
     return (
         <path

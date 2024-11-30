@@ -15,7 +15,7 @@ export const CameraIcon = ({
     onPointerDown,
     selectionColor,
 }: CameraIconProps) => {
-    const { x, y, width, height, fill } = layer;
+    const { x, y,  fill } = layer;
 
     return (
         <g

@@ -15,7 +15,7 @@ export const CarIcon = ({
     onPointerDown,
     selectionColor,
 }: CarIconProps) => {
-    const { x, y, width, height, fill } = layer;
+    const { x, y,  fill } = layer;
 
     return (
         <g

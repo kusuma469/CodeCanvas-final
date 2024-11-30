@@ -4,7 +4,7 @@ import { formatDistanceToNow } from "date-fns";
 import Link from "next/link";
 import Image from "next/image";
 import { useAuth } from "@clerk/nextjs";
-import { Code, MoreHorizontal } from "lucide-react";
+import {  MoreHorizontal } from "lucide-react";
 import { CodeActions } from "@/components/code-actions";
 import { Overlay } from "./overlay";
 
@@ -27,7 +27,7 @@ export const CodeDocumentCard = ({
     createdAt,
     language,
     imageUrl,
-    orgId,
+    //orgId,
 }: CodeDocumentCardProps) => {
     const { userId } = useAuth();
     const authorLabel = userId === authorId ? "You" : (authorName || "Unknown User");

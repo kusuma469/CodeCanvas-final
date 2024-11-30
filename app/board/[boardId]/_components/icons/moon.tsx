@@ -15,7 +15,7 @@ export const MoonIcon = ({
     onPointerDown,
     selectionColor,
 }: MoonIconProps) => {
-    const { x, y, width, height, fill } = layer;
+    const { x, y,  fill } = layer;
 
     return (
         <path

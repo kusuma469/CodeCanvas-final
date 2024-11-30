@@ -1,10 +1,10 @@
 // CloudIcon.tsx
 import { colorToCss } from "@/lib/utils";
-import { IconLayer } from "@/types/canvas";
+import { PhoneLayer } from "@/types/canvas";
 
 interface PhoneIconProps {
     id: string;
-    layer: IconLayer;
+    layer: PhoneLayer;
     onPointerDown: (e: React.PointerEvent, id: string) => void;
     selectionColor?: string;
 }

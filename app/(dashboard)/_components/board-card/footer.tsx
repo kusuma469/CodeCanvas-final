@@ -1,5 +1,5 @@
 import { cn } from "@/lib/utils";
-import { Star, StarIcon } from "lucide-react";
+import {  StarIcon } from "lucide-react";
 
 interface FooterProps {
     title: string;

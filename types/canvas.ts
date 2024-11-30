@@ -272,6 +272,7 @@ export type CanvasState =
             | LayerType.Music
             | LayerType.Tree
             | LayerType.Phone;
+            fileLink?: string;
     }
   | {
         mode: CanvasMode.Pencil;
@@ -285,20 +286,16 @@ export type CanvasState =
         initialBounds: XYWH;
         corner: Side;
     }
-  | {
-        mode: CanvasMode.Inserting;
-        layerType: LayerType.File;
-        fileLink: string;
-    };
+  
 
 export enum CanvasMode {
-  None = "none",
-  Pressing = "pressing",
-  SelectionNet = "selection-net",
-  Translating = "translating",
-  Inserting = "inserting",
-  Resizing = "resizing",
-  Pencil = "pencil"
+  None = "None",
+  Pressing = "Pressing",
+  SelectionNet = "SelectionNet",
+  Translating = "Translating",
+  Inserting = "Inserting",
+  Resizing = "Resizing",
+  Pencil = "Pencil"
 }
 
 export type Layer =

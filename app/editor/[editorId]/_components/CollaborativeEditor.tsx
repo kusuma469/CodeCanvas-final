@@ -54,6 +54,7 @@ interface UserInfo {
 interface CollaborativeEditorProps {
   documentId: string;
   defaultValue?: string;
+  defaultLanguage?: string;
 }
 
 interface CompilationStateStorage {

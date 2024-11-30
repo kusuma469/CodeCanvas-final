@@ -1,9 +1,9 @@
 import { colorToCss } from "@/lib/utils";
-import { IconLayer } from "@/types/canvas";
+import { HouseLayer } from "@/types/canvas";
 
 interface HouseIconProps {
     id: string;
-    layer: IconLayer;
+    layer: HouseLayer;
     onPointerDown: (e: React.PointerEvent, id: string) => void;
     selectionColor?: string;
 }
@@ -14,7 +14,7 @@ export const HouseIcon = ({
     onPointerDown,
     selectionColor,
 }: HouseIconProps) => {
-    const { x, y, width, height, fill } = layer;
+    const { x, y, fill } = layer;
 
     return (
         <g

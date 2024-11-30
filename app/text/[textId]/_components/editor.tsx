@@ -23,12 +23,12 @@ import { LinkNode } from "@lexical/link";
 import EnhancedToolbar from './toolbar';
 import FloatingToolbar from "./floating-toolbar";
 import SpellCheckPlugin from "./spellcheck-plugin";
-import NotificationsPopover from "../notifications-popover";
+//import NotificationsPopover from "../notifications-popover";
 import Loading from "../loading";
-import VersionHistoryDialog from "../version-history-dialog";
+//import VersionHistoryDialog from "../version-history-dialog";
 import { useThreads } from "@liveblocks/react/suspense";
 import { useIsMobile } from "./use-is-mobile";
-import { MentionsPlugin } from "./mentions-plugin";
+//import { MentionsPlugin } from "./mentions-plugin";
 import { useState, useCallback } from 'react';
 import { FormEvent } from 'react';
 
@@ -73,11 +73,12 @@ const initialConfig = liveblocksConfig({
     console.error(error);
   },
 });
-import { Participants } from "@/app/board/[boardId]/_components/participants";
+//import { Participants } from "@/app/board/[boardId]/_components/participants";
 export default function Editor() {
   const [content, setContent] = useState('');
+  console.log(content)
   const status = useEditorStatus();
-  const { threads } = useThreads();
+  //const { threads } = useThreads();
 
   const handleChange = useCallback((e: FormEvent<HTMLDivElement>) => {
     const target = e.currentTarget;

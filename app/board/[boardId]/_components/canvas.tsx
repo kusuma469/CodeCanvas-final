@@ -23,7 +23,22 @@ import {
     Side,
     XYWH,
     Layer,
-    PencilDraft,
+    EllipseLayer,
+    BikeLayer,
+    CameraLayer,
+    CarLayer,
+    CloudLayer,
+    ComputerLayer,
+    HeartLayer,
+    HouseLayer,
+    MoonLayer,
+    MusicLayer,
+    PhoneLayer,
+    RectangleLayer,
+    StarLayer,
+    SunLayer,
+    TreeLayer,
+   /* PencilDraft,
     Coordinates,
     BikeLayer,
     CameraLayer,
@@ -37,7 +52,7 @@ import {
     PhoneLayer,
     StarLayer,
     SunLayer,
-    TreeLayer,
+    TreeLayer,*/
 } from "@/types/canvas";
 import {
     useHistory,
@@ -80,7 +95,19 @@ const MOVE_OFFSET = 5;
 interface CanvasProps {
     boardId: string;
 }
-
+/*
+interface BaseLayer {
+    x: number;
+    y: number;
+    height: number;
+    width: number;
+    fill: Color;
+    type: LayerType;
+  }
+  
+  interface LayerData extends BaseLayer {
+    [key: string]: any;  // For any additional properties specific to certain layer types
+  }*/
 export const Canvas = ({ boardId }: CanvasProps) => {
     const layerIds = useStorage((root) => root.layerIds);
 
@@ -258,7 +285,7 @@ export const Canvas = ({ boardId }: CanvasProps) => {
         },
         [lastUsedColor]
     );
-    
+    /*
     const insertPath = useMutation(
         ({ storage, self, setMyPresence }) => {
             const liveLayers = storage.get("layers");
@@ -288,11 +315,12 @@ export const Canvas = ({ boardId }: CanvasProps) => {
             });
         },
         [lastUsedColor]
-    );
+    );*/
 
     
     const handleShapeSelection = useMutation(
         ({ storage, self, setMyPresence }, shapeType: string) => {
+            console.log(self)
             const liveLayers = storage.get("layers");
             const liveLayerIds = storage.get("layerIds");
             
@@ -330,125 +358,161 @@ export const Canvas = ({ boardId }: CanvasProps) => {
 
             // Create the new shape layer
             const newLayerId = nanoid();
-            const layerData: any = {
+            let layerData: Layer;
+            const baseProps = {
                 type: LayerType.Rectangle, // default
                 x: centerX - width / 2,
                 y: centerY - height / 2,
                 height: height,
                 width: width,
                 fill: lastUsedColor,
-            };
+              };
 
             switch (shapeType) {
                 case 'circle':
-                    layerData.type = LayerType.Ellipse;
-                    const size = Math.max(width, height);
-                    layerData.width = size;
-                    layerData.height = size;
-                    break;
-                case 'square':
-                    layerData.type = LayerType.Rectangle;
-                    const squareSize = Math.max(width, height);
-                    layerData.width = squareSize;
-                    layerData.height = squareSize;
-                    break;
-                case 'rectangle':
-                    layerData.type = LayerType.Rectangle;
-                    break;
-                    case 'bike':
-    layerData.type = LayerType.Bike;
-    const sizeBike = Math.max(width, height);
-    layerData.width = sizeBike;
-    layerData.height = sizeBike;
-    break;
-
-case 'camera':
-    layerData.type = LayerType.Camera;
-    const sizeCamera = Math.max(width, height);
-    layerData.width = sizeCamera;
-    layerData.height = sizeCamera;
-    break;
-
-case 'car':
-    layerData.type = LayerType.Car;
-    const sizeCar = Math.max(width, height);
-    layerData.width = sizeCar;
-    layerData.height = sizeCar;
-    break;
-
-case 'cloud':
-    layerData.type = LayerType.Cloud;
-    const sizeCloud = Math.max(width, height);
-    layerData.width = sizeCloud;
-    layerData.height = sizeCloud;
-    break;
-
-case 'computer':
-    layerData.type = LayerType.Computer;
-    const sizeComputer = Math.max(width, height);
-    layerData.width = sizeComputer;
-    layerData.height = sizeComputer;
-    break;
-
-case 'heart':
-    layerData.type = LayerType.Heart;
-    const sizeHeart = Math.max(width, height);
-    layerData.width = sizeHeart;
-    layerData.height = sizeHeart;
-    break;
-
-case 'house':
-    layerData.type = LayerType.House;
-    const sizeHouse = Math.max(width, height);
-    layerData.width = sizeHouse;
-    layerData.height = sizeHouse;
-    break;
-
-case 'moon':
-    layerData.type = LayerType.Moon;
-    const sizeMoon = Math.max(width, height);
-    layerData.width = sizeMoon;
-    layerData.height = sizeMoon;
-    break;
-
-case 'music':
-    layerData.type = LayerType.Music;
-    const sizeMusic = Math.max(width, height);
-    layerData.width = sizeMusic;
-    layerData.height = sizeMusic;
-    break;
-
-case 'phone':
-    layerData.type = LayerType.Phone;
-    const sizePhone = Math.max(width, height);
-    layerData.width = sizePhone;
-    layerData.height = sizePhone;
-    break;
-
-case 'star':
-    layerData.type = LayerType.Star;
-    const sizeStar = Math.max(width, height);
-    layerData.width = sizeStar;
-    layerData.height = sizeStar;
-    break;
-
-case 'sun':
-    layerData.type = LayerType.Sun;
-    const sizeSun = Math.max(width, height);
-    layerData.width = sizeSun;
-    layerData.height = sizeSun;
-    break;
-
-case 'tree':
-    layerData.type = LayerType.Tree;
-    const sizeTree = Math.max(width, height);
-    layerData.width = sizeTree;
-    layerData.height = sizeTree;
-    break;
-
-                    
-                // Add other shape cases as needed
-            }
+                    const circleSize = Math.max(width, height);
+        layerData = {
+          ...baseProps,
+          type: LayerType.Ellipse,
+          height: circleSize,
+          width: circleSize,
+        } as EllipseLayer;
+        break;
+        case 'square':
+            case 'rectangle':
+              layerData = {
+                ...baseProps,
+                type: LayerType.Rectangle,
+                ...(shapeType === 'square' && {
+                  height: Math.max(width, height),
+                  width: Math.max(width, height),
+                }),
+              } as RectangleLayer;
+              break;
+      
+            case 'bike':
+              layerData = {
+                ...baseProps,
+                type: LayerType.Bike,
+                width: Math.max(width, height),
+                height: Math.max(width, height),
+              } as BikeLayer;
+              break;
+      
+            case 'camera':
+              layerData = {
+                ...baseProps,
+                type: LayerType.Camera,
+                width: Math.max(width, height),
+                height: Math.max(width, height),
+              } as CameraLayer;
+              break;
+      
+            case 'car':
+              layerData = {
+                ...baseProps,
+                type: LayerType.Car,
+                width: Math.max(width, height),
+                height: Math.max(width, height),
+              } as CarLayer;
+              break;
+      
+            case 'cloud':
+              layerData = {
+                ...baseProps,
+                type: LayerType.Cloud,
+                width: Math.max(width, height),
+                height: Math.max(width, height),
+              } as CloudLayer;
+              break;
+      
+            case 'computer':
+              layerData = {
+                ...baseProps,
+                type: LayerType.Computer,
+                width: Math.max(width, height),
+                height: Math.max(width, height),
+              } as ComputerLayer;
+              break;
+      
+            case 'heart':
+              layerData = {
+                ...baseProps,
+                type: LayerType.Heart,
+                width: Math.max(width, height),
+                height: Math.max(width, height),
+              } as HeartLayer;
+              break;
+      
+            case 'house':
+              layerData = {
+                ...baseProps,
+                type: LayerType.House,
+                width: Math.max(width, height),
+                height: Math.max(width, height),
+              } as HouseLayer;
+              break;
+      
+            case 'moon':
+              layerData = {
+                ...baseProps,
+                type: LayerType.Moon,
+                width: Math.max(width, height),
+                height: Math.max(width, height),
+              } as MoonLayer;
+              break;
+      
+            case 'music':
+              layerData = {
+                ...baseProps,
+                type: LayerType.Music,
+                width: Math.max(width, height),
+                height: Math.max(width, height),
+              } as MusicLayer;
+              break;
+      
+            case 'phone':
+              layerData = {
+                ...baseProps,
+                type: LayerType.Phone,
+                width: Math.max(width, height),
+                height: Math.max(width, height),
+              } as PhoneLayer;
+              break;
+      
+            case 'star':
+              layerData = {
+                ...baseProps,
+                type: LayerType.Star,
+                width: Math.max(width, height),
+                height: Math.max(width, height),
+              } as StarLayer;
+              break;
+      
+            case 'sun':
+              layerData = {
+                ...baseProps,
+                type: LayerType.Sun,
+                width: Math.max(width, height),
+                height: Math.max(width, height),
+              } as SunLayer;
+              break;
+      
+            case 'tree':
+              layerData = {
+                ...baseProps,
+                type: LayerType.Tree,
+                width: Math.max(width, height),
+                height: Math.max(width, height),
+              } as TreeLayer;
+              break;
+      
+            default:
+              layerData = {
+                ...baseProps,
+                type: LayerType.Rectangle,
+              } as RectangleLayer;
+          }
     
             liveLayerIds.push(newLayerId);
             liveLayers.set(newLayerId, new LiveObject(layerData));
@@ -465,7 +529,7 @@ case 'tree':
         [lastUsedColor, currentPoints, lastFreehandId]
     );
 
-    
+    /*
     const keepFreehandDrawing = useMutation(
         ({ storage, self, setMyPresence }) => {
             const { pencilDraft } = self.presence;
@@ -499,7 +563,7 @@ case 'tree':
             setCanvasState({ mode: CanvasMode.None });
         },
         [lastUsedColor]
-    );
+    );*/
     
     
     const resizeSelectedLayer = useMutation(
@@ -587,6 +651,7 @@ case 'tree':
 
     const onPointerDown = useCallback(
         (e: React.PointerEvent) => {
+            e.preventDefault();
             if (canvasState.mode === CanvasMode.Inserting) {
                 return;
             }
@@ -605,6 +670,7 @@ case 'tree':
     );
     const onPointerUp = useMutation(
         ({ storage, self, setMyPresence }, e: React.PointerEvent) => {
+            e.preventDefault();
             const point = pointerEventToCanvasPoint(e, camera);
     
             if (canvasState.mode === CanvasMode.Pencil) {
@@ -627,15 +693,12 @@ case 'tree':
                         return;
                     }
     
-                    // Create and store the path
-                    // Using the correct PencilDraft type (Coordinates[])
                     liveLayers.set(
                         id,
                         new LiveObject(penPointsToPathLayer(pencilDraft, lastUsedColor))
                     );
                     liveLayerIds.push(id);
     
-                    // Update presence
                     setMyPresence(
                         {
                             selection: [id],
@@ -644,9 +707,7 @@ case 'tree':
                         { addToHistory: true }
                     );
     
-                    // Show suggestions if enough points
                     if (pencilDraft.length > 5) {
-                        // Convert Coordinates[] to number[][] for currentPoints
                         const points = pencilDraft.map(([x, y]) => [x, y]);
                         setCurrentPoints(points);
                         setLastFreehandId(id);
@@ -660,16 +721,14 @@ case 'tree':
                     setCurrentPoints(null);
                     setLastFreehandId(null);
                 }
-                return;
-            }
-    
-            if (canvasState.mode === CanvasMode.Pressing) {
-                unSelectLayers();
-            } else if (canvasState.mode === CanvasMode.Inserting) {
-                insertLayer(canvasState.layerType, point);
-            }
-    
-            if (canvasState.mode !== CanvasMode.Pencil) {
+            } else {
+                if (canvasState.mode === CanvasMode.Pressing) {
+                    unSelectLayers();
+                } else if (canvasState.mode === CanvasMode.Inserting) {
+                    insertLayer(canvasState.layerType, point);
+                }
+                
+                // Move state reset outside of pencil condition
                 setCanvasState({ mode: CanvasMode.None });
             }
     

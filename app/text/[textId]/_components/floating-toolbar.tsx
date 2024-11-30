@@ -1,5 +1,5 @@
 import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
-import { $getSelection, $isRangeSelection, FORMAT_TEXT_COMMAND } from "lexical";
+import { $getSelection, $isRangeSelection,} from "lexical";
 import { useEffect, useLayoutEffect, useState } from "react";
 import * as React from "react";
 import { createPortal } from "react-dom";
@@ -16,7 +16,7 @@ import {
   size,
   useFloating,
 } from "@floating-ui/react-dom";
-import BoldIcon from "../icons/bold-icon";
+//import BoldIcon from "../icons/bold-icon";
 import CommentIcon from "../icons/comment-icon";
 
 export default function FloatingToolbar() {
@@ -243,6 +243,7 @@ export function createDOMRange(
     range.setStart(anchorDOM, anchorOffset);
     range.setEnd(focusDOM, focusOffset);
   } catch (e) {
+    console.log(e)
     return null;
   }
 

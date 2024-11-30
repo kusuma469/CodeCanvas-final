@@ -2,7 +2,7 @@ import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext
 import {
   $createHeadingNode,
   $createQuoteNode,
-  $isHeadingNode,
+  //$isHeadingNode,
 } from "@lexical/rich-text";
 import {
   $getSelection,
@@ -10,9 +10,9 @@ import {
   FORMAT_TEXT_COMMAND,
   ElementNode,
   TextNode,
-  LexicalCommand,
-  COMMAND_PRIORITY_NORMAL,
-  createCommand,
+  //LexicalCommand,
+  //COMMAND_PRIORITY_NORMAL,
+  //createCommand,
   TextFormatType,
   $createTextNode,
   ElementFormatType,
@@ -24,14 +24,14 @@ import {
 } from "@lexical/list";
 import {
   INSERT_TABLE_COMMAND,
-  TableNode,
-  TableCellNode,
-  TableRowNode
+  //TableNode,
+  //TableCellNode,
+  //TableRowNode
 } from '@lexical/table';
 import { UNDO_COMMAND, REDO_COMMAND } from "lexical";
 import { Undo2, Redo2 } from "lucide-react"; 
 import { useUndoRedoState } from './hooks/useUndoRedoState';
-import { DialogTrigger } from "@/components/ui/dialog";
+//import { DialogTrigger } from "@/components/ui/dialog";
 import { StyledPdfDownload } from './StyledDownload';
 import {
   Dialog,
@@ -44,7 +44,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
-import { $createLinkNode, LinkNode } from '@lexical/link';
+import { $createLinkNode } from '@lexical/link';
 import { useState, useCallback, useEffect } from "react";
 import { FindReplace } from './findReplace';
 import { Search } from 'lucide-react';
@@ -61,27 +61,27 @@ import {
   Heading1,
   Heading2,
   Heading3,
-  Quote,
+  //Quote,
   Link,
-  Image,
-  CheckSquare,
+ //Image,
+  //CheckSquare,
   Code,
   TextQuote,
   Highlighter,
   PaintBucket,
-  Type,
+  //Type,
   Table,
 } from "lucide-react";
 
 interface ColorPickerProps {
   onSelect: (color: string) => void;
 }
-
+/*
 interface TableInsertPayload {
   rows: string;
   columns: string;
   includeHeaders?: boolean;
-}
+}*/
 
 const ColorPicker = ({ onSelect }: ColorPickerProps) => {
   const colors = [
