@@ -14,7 +14,8 @@ import {
     Undo2,
     Grid,
     Grip,
-    File,
+    Text
+    
 } from "lucide-react";
 import { CanvasMode, CanvasState, LayerType } from "@/types/canvas";
 import { useSelf } from "@liveblocks/react/suspense";
@@ -161,7 +162,7 @@ const Toolbar = ({
                 />
                 <ToolButton
                     label="File"
-                    icon={File}
+                    icon={Text}
                     onClick={() =>
                         setCanvasState({
                             mode: CanvasMode.Inserting,
@@ -190,11 +191,11 @@ const Toolbar = ({
                 <ToolButton
                     label="Pen"
                     icon={Pencil}
-                    onClick={() =>
+                    onClick={() => {
                         setCanvasState({
                             mode: CanvasMode.Pencil,
                         })
-                    }
+                    }}
                     isActive={canvasState.mode === CanvasMode.Pencil}
                 />
             </div>

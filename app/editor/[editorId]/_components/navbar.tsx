@@ -11,13 +11,13 @@ import * as Y from "yjs";
 import { api } from "@/convex/_generated/api";
 import { Id } from "@/convex/_generated/dataModel";
 import { Button } from "@/components/ui/button";
-import { Skeleton } from "@/components/ui/skeleton";
+// import { Skeleton } from "@/components/ui/skeleton";
 import { Hint } from "@/components/hint";
 import { CodeActions } from "@/components/code-actions";
 import { useCodeRenameModal } from "@/store/use-code-rename-modal";
-//import { Participants } from "./participants";
+// import { Participants } from "./participants";
 import { Avatar } from "@/components/ui/avatar";
-import { Toolbar } from "./Toolbar";
+// import { Toolbar } from "./Toolbar";
 
 interface NavbarProps {
   documentId: string;
@@ -34,11 +34,12 @@ const TabSeparator = () => {
   return <div className="text-neutral-300 px-1.5">|</div>;
 };
 
-export const Navbar = ({ documentId, yUndoManager }: NavbarProps) => {
+export const Navbar = ({ documentId }: NavbarProps) => {
   const { onOpen } = useCodeRenameModal();
   const document = useQuery(api.codeDocument.get, { 
     id: documentId as Id<"codeDocuments">
   });
+
 
   if (!document) return <NavbarSkeleton />;
 
@@ -87,7 +88,14 @@ export const Navbar = ({ documentId, yUndoManager }: NavbarProps) => {
         </CodeActions>
       </div>
       <div className="flex items-center gap-x-4">
-        {yUndoManager && <Toolbar yUndoManager={yUndoManager} />}
+        {/* {yUndoManager && (
+          <Toolbar 
+            yUndoManager={yUndoManager}
+            handleImport={handleImport}
+            handleExport={handleExport}
+          />
+        )
+         } */}
         
         <Avatar />
       </div>

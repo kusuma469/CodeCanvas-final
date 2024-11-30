@@ -130,3 +130,64 @@ li::marker {
   text-align: start !important;
   text-align-last: start !important;
 }
+table {
+  border-collapse: collapse;
+  margin: 1rem 0;
+  width: 100%;
+}
+
+th, td {
+  border: 1px solid #000000;
+  padding: 0.5rem;
+  text-align: left;
+}
+
+th {
+  background-color: #f8fafc;
+  font-weight: 600;
+}
+.replaced-text {
+  background-color: #e9ecef;
+  transition: background-color 0.3s ease;
+}
+.active-match {
+  background-color: #ffd700;
+  border-radius: 2px;
+}
+
+.other-match {
+  background-color: #fff3bf;
+  border-radius: 2px;
+}
+/* Add to your global CSS */
+.editor-match-highlight {
+  background-color: #ffd700;
+  border-radius: 2px;
+}
+
+.editor-match-active {
+  background-color: #ff8c00;
+  border-radius: 2px;
+}
+.button-disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.button-disabled:hover {
+  background-color: transparent;
+}
+.editor-container img {
+  max-width: 100%;
+  height: auto;
+  display: block;
+  margin: 1em auto;
+  border-radius: 4px;
+}
+
+.editor-image-preview {
+  max-height: 112px;
+  width: auto;
+  object-fit: contain;
+  border-radius: 4px;
+}

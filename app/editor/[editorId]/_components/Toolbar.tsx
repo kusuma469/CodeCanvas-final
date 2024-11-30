@@ -3,9 +3,11 @@ import styles from "./Toolbar.module.css";
 
 type Props = {
   yUndoManager: Y.UndoManager;
+  handleImport: () => void; // Add handleImport prop
+  handleExport: () => void; // Add handleExport prop
 };
 
-export function Toolbar({ yUndoManager }: Props) {
+export function Toolbar({ yUndoManager, handleImport, handleExport }: Props) {
   return (
     <div className={styles.toolbar}>
       <button
@@ -22,9 +24,24 @@ export function Toolbar({ yUndoManager }: Props) {
       >
         <RedoIcon />
       </button>
+      <button
+        className={styles.button}
+        onClick={handleImport}
+        aria-label="import-python-file"
+      >
+        Import Python File
+      </button>
+      <button
+        className={styles.button}
+        onClick={handleExport}
+        aria-label="export-python-file"
+      >
+        Export Python File
+      </button>
     </div>
   );
 }
+
 
 export function UndoIcon() {
   return (
