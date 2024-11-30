@@ -9,7 +9,7 @@ import { Id } from "@/convex/_generated/dataModel";
 const convex = new ConvexHttpClient(process.env.NEXT_PUBLIC_CONVEX_URL!);
 
 const liveblocks = new Liveblocks({
-    secret: "sk_dev_hRxBIsC6alBYm2lg5eHia1lPLA9VOqveu90Aom1SQEduvxVGspU1NYk-TsxUhsac",
+    secret: process.env.LIVEBLOCKS_SECRET_KEY!
  })
 
 

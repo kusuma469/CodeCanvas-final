@@ -1,5 +1,5 @@
 import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
-import { $getSelection, $isRangeSelection, FORMAT_TEXT_COMMAND } from "lexical";
+import { $getSelection, $isRangeSelection,} from "lexical";
 import { useEffect, useLayoutEffect, useState } from "react";
 import * as React from "react";
 import { createPortal } from "react-dom";
@@ -16,7 +16,7 @@ import {
   size,
   useFloating,
 } from "@floating-ui/react-dom";
-import BoldIcon from "../icons/bold-icon";
+//import BoldIcon from "../icons/bold-icon";
 import CommentIcon from "../icons/comment-icon";
 
 export default function FloatingToolbar() {
@@ -111,13 +111,6 @@ function Toolbar({
       }}
     >
       <div className="flex items-center justify-center gap-2 p-1.5 w-full min-w-max rounded-lg border shadow border-border/80 text-foreground bg-card">
-        <button
-          onClick={() => editor.dispatchCommand(FORMAT_TEXT_COMMAND, "bold")}
-          className="inline-flex relative items-center justify-center whitespace-nowrap rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 hover:bg-accent hover:text-accent-foreground w-8 h-8 data-[active]:bg-accent"
-        >
-          <BoldIcon />
-        </button>
-
         <button
           onClick={() => {
             const isOpen = editor.dispatchCommand(
@@ -250,6 +243,7 @@ export function createDOMRange(
     range.setStart(anchorDOM, anchorOffset);
     range.setEnd(focusDOM, focusOffset);
   } catch (e) {
+    console.log(e)
     return null;
   }
 

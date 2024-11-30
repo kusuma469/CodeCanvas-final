@@ -1,7 +1,7 @@
 import Editor from "./_components/editor"
 import { Room } from "@/components/room"
 import { Loading } from "@/components/auth/loading"
-import { useRouter } from "next/navigation"
+//import { useRouter } from "next/navigation"
 
 interface TextPageProps {
     params: {

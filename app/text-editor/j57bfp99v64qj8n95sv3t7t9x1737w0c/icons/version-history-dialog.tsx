@@ -1,6 +1,6 @@
 import * as Dialog from "@radix-ui/react-dialog";
-import { Suspense, useCallback, useMemo, useState } from "react";
-import Loading from "./loading";
+import {  useCallback, useMemo, useState } from "react";
+import Loading from "../loading";
 import {
   HistoryVersionSummaryList,
   HistoryVersionSummary,

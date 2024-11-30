@@ -1,6 +1,7 @@
 import {
   Camera,
   Color,
+  Coordinates,
   Layer,
   LayerType,
   PathLayer,
@@ -39,9 +40,9 @@ export function pointerEventToCanvasPoint(
   };
 }
 
-export function colorToCss(color: Color) {
-  return `#${color.r.toString(16).padStart(2, "0")}${color.g.toString(16).padStart(2, "0")}${color.b.toString(16).padStart(2, "0")}`;
-}
+export const colorToCss = (color: Color) => {
+  return `rgb(${color.r}, ${color.g}, ${color.b})`;
+};
 
 export function cssToColor(css_color: string) {
   if (!css_color.startsWith("#") || css_color.length !== 7) {
@@ -125,50 +126,38 @@ export function getContrastingTextColor(color: Color) {
   return luminance > 182 ? "black" : "white";
 }
 
-export function penPointsToPathLayer(
-  points: number[][],
+export const penPointsToPathLayer = (
+  points: Coordinates[],
   color: Color
-): PathLayer {
+): PathLayer => {
   if (points.length < 2) {
-      throw new Error("Cannot transform points with less than 2 points");
+      throw new Error("Cannot create path with less than 2 points");
   }
 
-  let left = Number.POSITIVE_INFINITY;
-  let top = Number.POSITIVE_INFINITY;
-  let right = Number.NEGATIVE_INFINITY;
-  let bottom = Number.NEGATIVE_INFINITY;
-
-  for (const point of points) {
-      const [x, y] = point;
-
-      if (left > x) {
-          left = x;
-      }
-
-      if (top > y) {
-          top = y;
-      }
-
-      if (right < x) {
-          right = x;
-      }
-
-      if (bottom < y) {
-          bottom = y;
-      }
-  }
+  const [minX, minY, maxX, maxY] = points.reduce(
+      ([minX, minY, maxX, maxY], [x, y]) => [
+          Math.min(minX, x),
+          Math.min(minY, y),
+          Math.max(maxX, x),
+          Math.max(maxY, y),
+      ],
+      [Infinity, Infinity, -Infinity, -Infinity]
+  );
 
   return {
       type: LayerType.Path,
-      x: left,
-      y: top,
-      width: right - left,
-      height: bottom - top,
+      x: minX,
+      y: minY,
+      width: maxX - minX,
+      height: maxY - minY,
       fill: color,
-      points: points.map(([x, y, pressure]) => [x - left, y - top, pressure]),
+      points: points.map(([x, y, pressure]) => [
+          x - minX,
+          y - minY,
+          pressure
+      ])
   };
-}
-
+};
 export function getSvgPathFromStroke(stroke: number[][]) {
   if (!stroke.length) return "";
 

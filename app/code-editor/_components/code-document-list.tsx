@@ -4,8 +4,9 @@ import { useQuery } from "convex/react";
 import { api } from "@/convex/_generated/api";
 import { NewDocumentButton } from "./new-document-button";
 import { CodeDocumentCard } from "./code-document-card";
-import { Id } from "@/convex/_generated/dataModel";
-
+//import { Id } from "@/convex/_generated/dataModel";
+//import { useSearchParams } from "next/navigation";
+/*
 interface CodeDocument {
     _id: Id<"codeDocuments">;
     _creationTime: number;
@@ -17,13 +18,11 @@ interface CodeDocument {
     imageUrl: string;
     lastModified: number;
     content?: string;
-}
+}*/
 
 interface CodeDocumentListProps {
     orgId: string;
-    query: {
-        search?: string;
-    };
+    searchTerm?: string;
 }
 
 const languageImages = {
@@ -37,11 +36,15 @@ const languageImages = {
     default: "/placeholders/1.svg",
 };
 
-export const CodeDocumentList = ({
-    orgId,
-    query,
-}: CodeDocumentListProps) => {
-    const data = useQuery(api.codeDocuments.get, { orgId });
+export const CodeDocumentList = ({ orgId,searchTerm }: CodeDocumentListProps) => {
+    
+    const searchResults = useQuery(api.codeDocuments.searchByTitle, { 
+        orgId, 
+        searchTerm: searchTerm || "" 
+    });
+    const allDocuments = useQuery(api.codeDocuments.get, { orgId });
+    // Conditional query logic
+    const data = searchTerm ? searchResults : allDocuments;
 
     if (data === undefined) {
         return (
@@ -53,6 +56,15 @@ export const CodeDocumentList = ({
                         <CodeDocumentCard.Skeleton key={index} />
                     ))}
                 </div>
+            </div>
+        );
+    }
+
+    if (data.length === 0) {
+        return (
+            <div>
+                <h2 className="text-2xl">No Results Found</h2>
+                <p className="text-gray-600">Try adjusting your search criteria.</p>
             </div>
         );
     }

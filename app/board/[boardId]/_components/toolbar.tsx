@@ -14,7 +14,8 @@ import {
     Undo2,
     Grid,
     Grip,
-    File,
+    Text
+    
 } from "lucide-react";
 import { CanvasMode, CanvasState, LayerType } from "@/types/canvas";
 import { useSelf } from "@liveblocks/react/suspense";
@@ -43,7 +44,8 @@ const Toolbar = ({
 }: ToolbarProps) => {
     const selection = useSelf((me) => me.presence.selection);
     const { organization } = useOrganization();
-
+    console.log(organization)
+    /*
     const onFileButtonClick = useCallback(() => {
         if (!organization) {
             console.error("No organization context found.");
@@ -54,7 +56,7 @@ const Toolbar = ({
             mode: CanvasMode.Inserting,
             layerType: LayerType.File,
         });
-    }, [organization, setCanvasState]);
+    }, [organization, setCanvasState]); */
 
     const handleKeyDown = useCallback((e: KeyboardEvent) => {
         if (selection?.length > 0) return;
@@ -161,7 +163,7 @@ const Toolbar = ({
                 />
                 <ToolButton
                     label="File"
-                    icon={File}
+                    icon={Text}
                     onClick={() =>
                         setCanvasState({
                             mode: CanvasMode.Inserting,
@@ -190,11 +192,11 @@ const Toolbar = ({
                 <ToolButton
                     label="Pen"
                     icon={Pencil}
-                    onClick={() =>
+                    onClick={() => {
                         setCanvasState({
                             mode: CanvasMode.Pencil,
                         })
-                    }
+                    }}
                     isActive={canvasState.mode === CanvasMode.Pencil}
                 />
             </div>

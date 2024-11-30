@@ -4,7 +4,7 @@ import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
-import { ControllerRenderProps, FieldValues } from "react-hook-form";
+import { ControllerRenderProps,  } from "react-hook-form";
 
 import {
   Dialog,
@@ -57,6 +57,7 @@ export const CodeRenameModal = () => {
       onClose();
     } catch (error) {
       toast.error("Failed to rename code document");
+      console.log(error)
     }
   };
 

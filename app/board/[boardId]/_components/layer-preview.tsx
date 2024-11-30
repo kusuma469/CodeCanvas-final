@@ -10,7 +10,19 @@ import { Note } from "./note";
 import { Path } from "./path";
 import { colorToCss } from "@/lib/utils";
 import { File } from "./file";
-
+import { BikeIcon } from "./icons/bike";
+import { CameraIcon } from "./icons/camera";
+import { CarIcon } from "./icons/car";
+import { CloudIcon } from "./icons/cloud";
+import { ComputerIcon } from "./icons/computer";
+import { HeartIcon } from "./icons/heart";
+import { HouseIcon } from "./icons/house";
+import { MoonIcon } from "./icons/moon";
+import { MusicIcon } from "./icons/music";
+import { PhoneIcon } from "./icons/Phone";
+import { StarIcon } from "./icons/star";
+import { SunIcon } from "./icons/sun";
+import { TreeIcon } from "./icons/tree";
 interface LayerPreviewProps {
     id: string;
     onLayerPointerDown: (e: React.PointerEvent, layerId: string) => void;
@@ -79,6 +91,136 @@ export const LayerPreview = memo(
                             selectionColor={selectionColor}
                         />
                 );
+                case LayerType.Bike:
+                    return (
+                        <BikeIcon
+                            id={id}
+                            layer={layer}
+                            onPointerDown={onLayerPointerDown}
+                            selectionColor={selectionColor}
+                        />
+                    );
+                
+                case LayerType.Camera:
+                    return (
+                        <CameraIcon
+                            id={id}
+                            layer={layer}
+                            onPointerDown={onLayerPointerDown}
+                            selectionColor={selectionColor}
+                        />
+                    );
+                
+                case LayerType.Car:
+                    return (
+                        <CarIcon
+                            id={id}
+                            layer={layer}
+                            onPointerDown={onLayerPointerDown}
+                            selectionColor={selectionColor}
+                        />
+                    );
+                
+                case LayerType.Cloud:
+                    return (
+                        <CloudIcon
+                            id={id}
+                            layer={layer}
+                            onPointerDown={onLayerPointerDown}
+                            selectionColor={selectionColor}
+                        />
+                    );
+                
+                case LayerType.Computer:
+                    return (
+                        <ComputerIcon
+                            id={id}
+                            layer={layer}
+                            onPointerDown={onLayerPointerDown}
+                            selectionColor={selectionColor}
+                        />
+                    );
+                
+                case LayerType.Heart:
+                    return (
+                        <HeartIcon
+                            id={id}
+                            layer={layer}
+                            onPointerDown={onLayerPointerDown}
+                            selectionColor={selectionColor}
+                        />
+                    );
+                
+                case LayerType.House:
+                    return (
+                        <HouseIcon
+                            id={id}
+                            layer={layer}
+                            onPointerDown={onLayerPointerDown}
+                            selectionColor={selectionColor}
+                        />
+                    );
+                
+                case LayerType.Moon:
+                    return (
+                        <MoonIcon
+                            id={id}
+                            layer={layer}
+                            onPointerDown={onLayerPointerDown}
+                            selectionColor={selectionColor}
+                        />
+                    );
+                
+                case LayerType.Music:
+                    return (
+                        <MusicIcon
+                            id={id}
+                            layer={layer}
+                            onPointerDown={onLayerPointerDown}
+                            selectionColor={selectionColor}
+                        />
+                    );
+                
+                case LayerType.Phone:
+                    return (
+                        <PhoneIcon
+                            id={id}
+                            layer={layer}
+                            onPointerDown={onLayerPointerDown}
+                            selectionColor={selectionColor}
+                        />
+                    );
+                
+                case LayerType.Star:
+                    return (
+                        <StarIcon
+                            id={id}
+                            layer={layer}
+                            onPointerDown={onLayerPointerDown}
+                            selectionColor={selectionColor}
+                        />
+                    );
+                
+                case LayerType.Sun:
+                    return (
+                        <SunIcon
+                            id={id}
+                            layer={layer}
+                            onPointerDown={onLayerPointerDown}
+                            selectionColor={selectionColor}
+                        />
+                    );
+                
+                case LayerType.Tree:
+                    return (
+                        <TreeIcon
+                            id={id}
+                            layer={layer}
+                            onPointerDown={onLayerPointerDown}
+                            selectionColor={selectionColor}
+                        />
+                    );
+                
             default:
                 console.log(layer);
                 console.warn("Unsupported layer type");

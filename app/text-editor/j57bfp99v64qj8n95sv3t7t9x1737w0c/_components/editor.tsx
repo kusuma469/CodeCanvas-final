@@ -16,7 +16,7 @@ import {
   FloatingThreads,
 } from "@liveblocks/react-lexical";
 import FloatingToolbar from "./floating-toolbar";
-import NotificationsPopover from "../notifications-popover";
+//import NotificationsPopover from "../notifications-popover";
 import Loading from "../loading";
 import { Bell } from "lucide-react";
 import VersionHistoryDialog from "../version-history-dialog";
@@ -31,7 +31,7 @@ const initialConfig = liveblocksConfig({
     throw error;
   },
 });
-import { Participants } from "@/app/board/[boardId]/_components/participants";
+//import { Participants } from "@/app/board/[boardId]/_components/participants";
 export default function Editor() {
   const status = useEditorStatus();
 
