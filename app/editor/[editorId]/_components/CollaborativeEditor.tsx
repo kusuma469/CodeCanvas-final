@@ -228,12 +228,13 @@ export const CollaborativeEditor: React.FC<CollaborativeEditorProps> = ({
         timestamp: Date.now()
       });
 
-      // Use relative path for API endpoint
-      const apiUrl = process.env.NODE_ENV === 'production' 
-        ? '/api/execute'
-        : 'http://localhost:5000/execute';
+      // // Use relative path for API endpoint
+      // const apiUrl = process.env.NODE_ENV === 'production' 
+      //   ? '/api/execute'
+      //   : 'http://localhost:5000/execute';
 
-      const response = await fetch(apiUrl, {
+      // const response = await fetch(apiUrl, {
+        const response = await fetch('/api/execute', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
