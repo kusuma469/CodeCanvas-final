@@ -1,29 +1,22 @@
-from typing import Union, Dict, Any
-from http import HTTPStatus
 import json
-import sys
 import io
 import contextlib
 import traceback
+from typing import Dict, Any
 
-def create_response(body: Dict[str, Any], status_code: int = 200, headers: Dict[str, str] = None) -> Dict[str, Any]:
-    default_headers = {
-        "Content-Type": "application/json",
-        "Access-Control-Allow-Origin": "*",
-        "Access-Control-Allow-Methods": "POST, OPTIONS",
-        "Access-Control-Allow-Headers": "Content-Type",
-    }
-    
-    if headers:
-        default_headers.update(headers)
-    
+def create_response(body: Dict[str, Any], status_code: int = 200) -> Dict[str, Any]:
     return {
-        "statusCode": status_code,
         "body": json.dumps(body),
-        "headers": default_headers
+        "status": status_code,
+        "headers": {
+            "Content-Type": "application/json",
+            "Access-Control-Allow-Origin": "*",
+            "Access-Control-Allow-Methods": "POST, OPTIONS",
+            "Access-Control-Allow-Headers": "Content-Type",
+        }
     }
 
-def run_code(code: str) -> dict[str, Any]:
+def run_code(code: str) -> Dict[str, Any]:
     try:
         output_buffer = io.StringIO()
         error_buffer = io.StringIO()
@@ -39,28 +32,22 @@ def run_code(code: str) -> dict[str, Any]:
         error_msg = f"{str(e)}\n{error_buffer.getvalue()}"
         return {"error": error_msg}
 
-def OPTIONS() -> Dict[str, Any]:
-    return create_response({}, HTTPStatus.NO_CONTENT)
+def OPTIONS(request):
+    return create_response({}, 204)
 
-async def POST(request) -> Dict[str, Any]:
+async def POST(request):
     try:
         body = await request.json()
         if not body or 'code' not in body:
-            return create_response(
-                {"error": "No code provided"},
-                status_code=400
-            )
+            return create_response({"error": "No code provided"}, 400)
 
         result = run_code(body['code'])
         return create_response(
             result,
-            status_code=200 if "output" in result else 400
+            200 if "output" in result else 400
         )
     except Exception as e:
-        return create_response(
-            {
-                "error": str(e),
-                "traceback": traceback.format_exc()
-            },
-            status_code=500
-        )
+        return create_response({
+            "error": str(e),
+            "traceback": traceback.format_exc()
+        }, 500)
