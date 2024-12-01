@@ -59,7 +59,7 @@ export const CodeDocumentList = ({ orgId,searchTerm }: CodeDocumentListProps) =>
             </div>
         );
     }
-
+/*
     if (data.length === 0) {
         return (
             <div>
@@ -67,7 +67,7 @@ export const CodeDocumentList = ({ orgId,searchTerm }: CodeDocumentListProps) =>
                 <p className="text-gray-600">Try adjusting your search criteria.</p>
             </div>
         );
-    }
+    }*/
 
     return (
         <div>
