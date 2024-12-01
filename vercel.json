@@ -1,36 +1,10 @@
 {
     "version": 2,
-    "builds": [
-      {
-        "src": "app/api/execute/route.py",
-        "use": "@vercel/python",
-        "config": {
-          "maxLambdaSize": "10mb",
-          "runtime": "python3.9"
-        }
-      },
-      {
-        "src": "package.json",
-        "use": "@vercel/next"
-      }
-    ],
-    
-    "routes": [
-      {
-        "src": "/api/execute",
-        "methods": ["POST", "OPTIONS", "GET"],
-        "dest": "app/api/execute/route.py"
-      },
-      {
-        "src": "/(.*)",
-        "dest": "/"
-      }
-    ],
-
     "functions": {
       "app/api/execute/route.py": {
-        "memory": 1024,
-        "maxDuration": 10
+        "memory": 256,
+        "maxDuration": 10,
+        "runtime": "python3.9"
       }
     }
-}
+  }
