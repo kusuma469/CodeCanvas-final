@@ -27,25 +27,31 @@ def run_code(code: str):
 
 def handler(event, context):
     try:
-        # Parse the incoming JSON request body
-        body = json.loads(event["body"])
-        
-        # Check if 'code' key is present
-        if "code" not in body:
+        # Ensure user is authenticated
+        user_id = event.get("headers", {}).get("x-user-id")
+        if not user_id:
             return {
-                "statusCode": HTTPStatus.BAD_REQUEST,
-                "body": json.dumps({"error": "No code provided"}),
+                "statusCode": HTTPStatus.UNAUTHORIZED,
+                "body": json.dumps({"error": "Unauthorized"}),
                 "headers": {
                     "Content-Type": "application/json",
                     "Access-Control-Allow-Origin": "*",
                 },
             }
-        
+
+        # Parse the incoming JSON request body
+        body = json.loads(event["body"])
+        if "code" not in body:
+            return {
+                "statusCode": HTTPStatus.BAD_REQUEST,
+                "body": json.dumps({"error": "No code provided"}),
+                "headers": {"Content-Type": "application/json"},
+            }
+
         # Run the provided Python code
         result = run_code(body["code"])
         status = HTTPStatus.OK if "output" in result else HTTPStatus.BAD_REQUEST
-        
-        # Return the result
+
         return {
             "statusCode": status,
             "body": json.dumps(result),
@@ -56,16 +62,14 @@ def handler(event, context):
                 "Access-Control-Allow-Headers": "Content-Type",
             },
         }
-    
+
     except json.JSONDecodeError:
-        # Handle invalid JSON
         return {
             "statusCode": HTTPStatus.BAD_REQUEST,
             "body": json.dumps({"error": "Invalid JSON format"}),
             "headers": {"Content-Type": "application/json"},
         }
     except Exception as e:
-        # Handle unexpected errors
         return {
             "statusCode": HTTPStatus.INTERNAL_SERVER_ERROR,
             "body": json.dumps({"error": str(e)}),
