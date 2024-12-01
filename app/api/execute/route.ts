@@ -4,6 +4,13 @@ import { promisify } from 'util';
 import * as fs from 'fs';
 import * as path from 'path';
 
+interface ExecError extends Error {
+  code?: number;
+  killed?: boolean;
+  signal?: string;
+  cmd?: string;
+}
+
 const execAsync = promisify(exec);
 
 export async function POST(req: NextRequest) {
@@ -36,24 +43,26 @@ export async function POST(req: NextRequest) {
 
       return NextResponse.json({ output: stdout }, { status: 200 });
 
-    } catch (error: any) {
+    } catch (execError: unknown) {
       // Clean up on error
       fs.unlinkSync(tempFile);
+      const error = execError as ExecError;
       return NextResponse.json(
-        { error: error.message },
+        { error: error.message || "Execution failed" },
         { status: 500 }
       );
     }
 
-  } catch (error: any) {
+  } catch (error: unknown) {
+    const err = error as Error;
     return NextResponse.json(
-      { error: "Failed to execute code" },
+      { error: err.message || "Failed to execute code" },
       { status: 500 }
     );
   }
 }
 
-export async function OPTIONS(req: NextRequest) {
+export async function OPTIONS() {
   return new NextResponse(null, {
     status: 200,
     headers: {
