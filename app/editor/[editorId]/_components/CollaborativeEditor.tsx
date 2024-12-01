@@ -238,6 +238,7 @@ export const CollaborativeEditor: React.FC<CollaborativeEditorProps> = ({
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
+          'Accept': 'application/json',
         },
         body: JSON.stringify({
           code,
@@ -248,7 +249,15 @@ export const CollaborativeEditor: React.FC<CollaborativeEditorProps> = ({
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
       }*/
-
+      // Check if response is ok and content type is correct
+      const contentType = response.headers.get("content-type");
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+      if (!contentType?.includes("application/json")) {
+        throw new Error("Expected JSON response but received " + contentType);
+      }
+      
       const data = await response.json();
       
       updateCompilationState({
