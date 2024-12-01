@@ -4,14 +4,13 @@
       "app/api/execute/route.py": {
         "memory": 256,
         "maxDuration": 10,
-        "runtime": "@vercel/python"
+        "runtime": "@vercel/python@3.1.0"
       }
     },
     "routes": [
-      {
-        "src": "/api/execute",
-        "dest": "app/api/execute/route.py"
-      }
-    ]
+        {
+          "src": "/api/execute",
+          "dest": "app/api/execute/route.py"
+        }
+      ]
   }
-  
