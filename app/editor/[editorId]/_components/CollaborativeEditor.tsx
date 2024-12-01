@@ -238,7 +238,6 @@ export const CollaborativeEditor: React.FC<CollaborativeEditorProps> = ({
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'Accept': 'application/json',
         },
         body: JSON.stringify({
           code,
@@ -257,7 +256,12 @@ export const CollaborativeEditor: React.FC<CollaborativeEditorProps> = ({
       if (!contentType?.includes("application/json")) {
         throw new Error("Expected JSON response but received " + contentType);
       }
-      
+
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({ error: 'Failed to parse error response' }));
+        throw new Error(errorData.error || `HTTP error! status: ${response.status}`);
+      }
+
       const data = await response.json();
       
       updateCompilationState({

@@ -1,4 +1,4 @@
-from http.server import BaseHTTPRequestHandler
+from typing import Union, Dict, Any
 from http import HTTPStatus
 import json
 import sys
@@ -6,90 +6,61 @@ import io
 import contextlib
 import traceback
 
-def run_code(code):
+def create_response(body: Dict[str, Any], status_code: int = 200, headers: Dict[str, str] = None) -> Dict[str, Any]:
+    default_headers = {
+        "Content-Type": "application/json",
+        "Access-Control-Allow-Origin": "*",
+        "Access-Control-Allow-Methods": "POST, OPTIONS",
+        "Access-Control-Allow-Headers": "Content-Type",
+    }
+    
+    if headers:
+        default_headers.update(headers)
+    
+    return {
+        "statusCode": status_code,
+        "body": json.dumps(body),
+        "headers": default_headers
+    }
+
+def run_code(code: str) -> dict[str, Any]:
     try:
-        # Create string buffer to capture output
         output_buffer = io.StringIO()
         error_buffer = io.StringIO()
         
-        # Redirect stdout to our buffer
         with contextlib.redirect_stdout(output_buffer):
             with contextlib.redirect_stderr(error_buffer):
                 exec(code, {}, {})
                 
         return {
-            "statusCode": 200,
-            "body": json.dumps({"output": output_buffer.getvalue() or "Code executed successfully"}),
-            "headers": {
-                "Content-Type": "application/json",
-                "Access-Control-Allow-Origin": "*",
-                "Access-Control-Allow-Methods": "POST, OPTIONS",
-                "Access-Control-Allow-Headers": "Content-Type",
-            }
+            "output": output_buffer.getvalue() or "Code executed successfully"
         }
     except Exception as e:
-        return {
-            "statusCode": 400,
-            "body": json.dumps({"error": str(e) + "\n" + error_buffer.getvalue()}),
-            "headers": {
-                "Content-Type": "application/json",
-                "Access-Control-Allow-Origin": "*",
-                "Access-Control-Allow-Methods": "POST, OPTIONS",
-                "Access-Control-Allow-Headers": "Content-Type",
-            }
-        }
+        error_msg = f"{str(e)}\n{error_buffer.getvalue()}"
+        return {"error": error_msg}
 
-def handler(request):
+def OPTIONS() -> Dict[str, Any]:
+    return create_response({}, HTTPStatus.NO_CONTENT)
+
+async def POST(request) -> Dict[str, Any]:
     try:
-        body = json.loads(request.body)
+        body = await request.json()
         if not body or 'code' not in body:
-            return {
-                "statusCode": 400,
-                "body": json.dumps({"error": "No code provided"}),
-                "headers": {"Content-Type": "application/json"}
-            }
-        
+            return create_response(
+                {"error": "No code provided"},
+                status_code=400
+            )
+
         result = run_code(body['code'])
-        return result
-        
+        return create_response(
+            result,
+            status_code=200 if "output" in result else 400
+        )
     except Exception as e:
-        return {
-            "statusCode": 500,
-            "body": json.dumps({
+        return create_response(
+            {
                 "error": str(e),
                 "traceback": traceback.format_exc()
-            }),
-            "headers": {
-                "Content-Type": "application/json",
-                "Access-Control-Allow-Origin": "*",
-                "Access-Control-Allow-Methods": "POST, OPTIONS",
-                "Access-Control-Allow-Headers": "Content-Type"
-            }
-        }
-
-class VercelHandler(BaseHTTPRequestHandler):
-    def do_POST(self):
-        content_length = int(self.headers.get('Content-Length', 0))
-        request_body = self.rfile.read(content_length).decode()
-        
-        request = type('Request', (), {
-            'method': 'POST',
-            'body': request_body
-        })
-        
-        response = handler(request)
-        
-        self.send_response(response['statusCode'])
-        for key, value in response.get('headers', {}).items():
-            self.send_header(key, value)
-        self.end_headers()
-        
-        if 'body' in response:
-            self.wfile.write(response['body'].encode())
-
-    def do_OPTIONS(self):
-        self.send_response(204)
-        self.send_header('Access-Control-Allow-Origin', '*')
-        self.send_header('Access-Control-Allow-Methods', 'POST, OPTIONS')
-        self.send_header('Access-Control-Allow-Headers', 'Content-Type')
-        self.end_headers()
+            },
+            status_code=500
+        )
