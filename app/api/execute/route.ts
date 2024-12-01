@@ -1,17 +1,13 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { exec } from 'child_process';
 import { promisify } from 'util';
-import * as fs from 'fs';
-import * as path from 'path';
-
-interface ExecError extends Error {
-  code?: number;
-  killed?: boolean;
-  signal?: string;
-  cmd?: string;
-}
 
 const execAsync = promisify(exec);
+
+interface PythonOutput {
+  stdout: string;
+  stderr: string;
+}
 
 export async function POST(req: NextRequest) {
   try {
@@ -25,17 +21,14 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    // Create a temporary Python file
-    const timestamp = new Date().getTime();
-    const tempFile = path.join('/tmp', `code_${timestamp}.py`);
-    fs.writeFileSync(tempFile, code);
-
+    // Create base64 encoded Python code to pass as argument
+    const encodedCode = Buffer.from(code).toString('base64');
+    
     try {
-      // Execute the Python code
-      const { stdout, stderr } = await execAsync(`python ${tempFile}`);
-      
-      // Clean up
-      fs.unlinkSync(tempFile);
+      // Execute Python with encoded code
+      const { stdout, stderr }: PythonOutput = await execAsync(
+        `python -c "import base64; exec(base64.b64decode('${encodedCode}').decode())"`
+      );
 
       if (stderr) {
         return NextResponse.json({ error: stderr }, { status: 400 });
@@ -44,11 +37,9 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ output: stdout }, { status: 200 });
 
     } catch (execError: unknown) {
-      // Clean up on error
-      fs.unlinkSync(tempFile);
-      const error = execError as ExecError;
+      const error = execError as Error;
       return NextResponse.json(
-        { error: error.message || "Execution failed" },
+        { error: error.message || "Code execution failed" },
         { status: 500 }
       );
     }
@@ -56,7 +47,7 @@ export async function POST(req: NextRequest) {
   } catch (error: unknown) {
     const err = error as Error;
     return NextResponse.json(
-      { error: err.message || "Failed to execute code" },
+      { error: err.message || "Failed to process request" },
       { status: 500 }
     );
   }
