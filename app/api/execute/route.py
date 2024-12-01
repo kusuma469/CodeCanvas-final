@@ -1,81 +1,70 @@
 from http.server import BaseHTTPRequestHandler
+from http import HTTPStatus
 import json
 import sys
 import io
 import contextlib
 
-def run_code(code):
+def run_code(code: str):
     output_buffer = io.StringIO()
+    error_buffer = io.StringIO()
+    
     try:
         with contextlib.redirect_stdout(output_buffer):
-            exec(code, {}, {})
-            return {
-                "statusCode": 200,
-                "body": json.dumps({"output": output_buffer.getvalue()}),
-                "headers": {
-                    "Content-Type": "application/json",
-                    "Access-Control-Allow-Origin": "*",
-                    "Access-Control-Allow-Methods": "POST, OPTIONS",
-                    "Access-Control-Allow-Headers": "Content-Type"
-                }
-            }
+            with contextlib.redirect_stderr(error_buffer):
+                exec(code, {'__builtins__': __builtins__}, {})
+                
+        return {
+            "body": json.dumps({"output": output_buffer.getvalue() or "Code executed successfully"}),
+            "status": HTTPStatus.OK,
+        }
     except Exception as e:
         return {
-            "statusCode": 400,
-            "body": json.dumps({"error": str(e)}),
-            "headers": {
-                "Content-Type": "application/json",
-                "Access-Control-Allow-Origin": "*",
-                "Access-Control-Allow-Methods": "POST, OPTIONS",
-                "Access-Control-Allow-Headers": "Content-Type"
-            }
+            "body": json.dumps({"error": str(e) + "\n" + error_buffer.getvalue()}),
+            "status": HTTPStatus.BAD_REQUEST,
         }
 
 def handler(request):
     if request.method == "OPTIONS":
         return {
-            "statusCode": 204,
+            "status": HTTPStatus.NO_CONTENT,
             "headers": {
                 "Access-Control-Allow-Origin": "*",
-                "Access-Control-Allow-Methods": "POST, OPTIONS",
-                "Access-Control-Allow-Headers": "Content-Type"
+                "Access-Control-Allow-Methods": "GET, POST, OPTIONS",
+                "Access-Control-Allow-Headers": "Content-Type",
             }
         }
     
+    if request.method != "POST":
+        return {
+            "status": HTTPStatus.METHOD_NOT_ALLOWED,
+            "body": json.dumps({"error": "Method not allowed"}),
+            "headers": {"Content-Type": "application/json"}
+        }
+    
     try:
-        body = json.loads(request.body) if request.body else {}
+        body = json.loads(request.body)
         if not body or 'code' not in body:
             return {
-                "statusCode": 400,
+                "status": HTTPStatus.BAD_REQUEST,
                 "body": json.dumps({"error": "No code provided"}),
                 "headers": {"Content-Type": "application/json"}
             }
-        return run_code(body['code'])
+        
+        result = run_code(body['code'])
+        return {
+            "status": result["status"],
+            "body": result["body"],
+            "headers": {
+                "Content-Type": "application/json",
+                "Access-Control-Allow-Origin": "*",
+                "Access-Control-Allow-Methods": "POST, OPTIONS",
+                "Access-Control-Allow-Headers": "Content-Type",
+            }
+        }
     except Exception as e:
         return {
-            "statusCode": 500,
+            "status": HTTPStatus.INTERNAL_SERVER_ERROR,
             "body": json.dumps({"error": str(e)}),
             "headers": {"Content-Type": "application/json"}
         }
-
-class VercelHandler(BaseHTTPRequestHandler):
-    def do_POST(self):
-        content_length = int(self.headers.get('Content-Length', 0))
-        body = self.rfile.read(content_length).decode('utf-8')
-        request = type('Request', (), {'method': 'POST', 'body': body})
-        response = handler(request)
-        
-        self.send_response(response['statusCode'])
-        for key, value in response.get('headers', {}).items():
-            self.send_header(key, value)
-        self.end_headers()
-        
-        if 'body' in response:
-            self.wfile.write(response['body'].encode('utf-8'))
-
-    def do_OPTIONS(self):
-        response = handler(type('Request', (), {'method': 'OPTIONS'}))
-        self.send_response(response['statusCode'])
-        for key, value in response.get('headers', {}).items():
-            self.send_header(key, value)
-        self.end_headers()
