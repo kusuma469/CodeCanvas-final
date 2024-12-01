@@ -4,13 +4,19 @@
         {
             "src": "package.json",
             "use": "@vercel/next"
+        },
+        {
+            "src": "app/api/execute.py",
+            "use": "@vercel/python",
+            "config": {
+                "maxLambdaSize": "10mb"
+            }
         }
     ],
-    "functions": {
-        "app/api/execute.py": {
-            "runtime": "@vercel/python@3.1.0",
-            "memory": 1024,
-            "maxDuration": 10
+    "rewrites": [
+        {
+            "source": "/api/execute",
+            "destination": "/app/api/execute.py"
         }
-    }
+    ]
 }
