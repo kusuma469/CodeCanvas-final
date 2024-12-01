@@ -1,8 +1,10 @@
+from http.server import BaseHTTPRequestHandler
 import json
 import io
 import contextlib
+import traceback
 
-def run_code(code: str):
+def run_code(code):
     output_buffer = io.StringIO()
     error_buffer = io.StringIO()
     
@@ -49,3 +51,30 @@ def handler(request):
             "body": json.dumps({"error": str(e)}),
             "headers": {"Content-Type": "application/json"}
         }
+
+class Handler(BaseHTTPRequestHandler):
+    def do_POST(self):
+        content_length = int(self.headers.get('Content-Length', 0))
+        request_body = self.rfile.read(content_length).decode()
+        
+        request = type('Request', (), {
+            'body': request_body,
+            'method': 'POST'
+        })
+        
+        response = handler(request)
+        
+        self.send_response(response['statusCode'])
+        for key, value in response['headers'].items():
+            self.send_header(key, value)
+        self.end_headers()
+        
+        if 'body' in response:
+            self.wfile.write(response['body'].encode())
+
+    def do_OPTIONS(self):
+        response = handler(type('Request', (), {'method': 'OPTIONS'}))
+        self.send_response(response['statusCode'])
+        for key, value in response['headers'].items():
+            self.send_header(key, value)
+        self.end_headers()
