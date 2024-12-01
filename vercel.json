@@ -9,7 +9,7 @@
             "src": "app/api/execute/route.py",
             "use": "@vercel/python",
             "config": {
-                "maxLambdaSize": "15mb",
+                "maxLambdaSize": "10mb",
                 "runtime": "python3.9"
             }
         }
@@ -19,10 +19,6 @@
             "src": "/api/execute",
             "dest": "app/api/execute/route.py",
             "methods": ["POST", "OPTIONS"]
-        },
-        {
-            "src": "/(.*)",
-            "dest": "/$1"
         }
     ]
 }
